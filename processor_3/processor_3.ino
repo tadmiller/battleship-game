@@ -14,105 +14,106 @@ unsigned int delayCounter;           // holder for the delay, as to not hog to p
 int animationStyle = 0;     // different types of animation 0 = slide 1 = frame replace
 unsigned long lastTime;     // display refresh time
 
-void setup() {
-  Serial.begin(115200);  // used for debug
+void setup()
+{
+    Serial.begin(115200);  // used for debug
 
-  matrixInit();
-  int bitmap = 0;
+    matrixInit();
+    int bitmap = 0;
 
-  // black color for buildings 0
-  // sky rotating color 1-7
+    // black color for buildings 0
+    // sky rotating color 1-7
   
-  // bitmap 0
-  addLineTobitmap(bitmap,0,1,1,1,1,0,1,1,1);
-  addLineTobitmap(bitmap,1,1,1,1,1,0,0,1,1);
-  addLineTobitmap(bitmap,2,1,1,1,1,0,0,1,1);
-  addLineTobitmap(bitmap,3,1,1,1,1,0,0,1,0);
-  addLineTobitmap(bitmap,4,1,0,1,0,0,0,1,0);
-  addLineTobitmap(bitmap,5,1,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,0,0,0,0);
+    // bitmap 0
+    addLineTobitmap(bitmap, 0, 1, 1, 1, 1, 0, 1, 1, 1);
+    addLineTobitmap(bitmap, 1, 1, 1, 1, 1, 0, 0, 1, 1);
+    addLineTobitmap(bitmap, 2, 1, 1, 1, 1, 0, 0, 1, 1);
+    addLineTobitmap(bitmap, 3, 1, 1, 1, 1, 0, 0, 1, 0);
+    addLineTobitmap(bitmap, 4, 1, 0, 1, 0, 0, 0, 1, 0);
+    addLineTobitmap(bitmap, 5, 1, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  // bitmap 1
-  bitmap++;
-  addLineTobitmap(bitmap,0,2,2,2,2,2,2,2,2);
-  addLineTobitmap(bitmap,1,2,2,2,2,2,0,2,2);
-  addLineTobitmap(bitmap,2,2,2,2,2,2,0,2,2);
-  addLineTobitmap(bitmap,3,2,2,2,2,2,0,2,0);
-  addLineTobitmap(bitmap,4,2,0,2,0,2,0,2,0);
-  addLineTobitmap(bitmap,5,2,0,0,0,2,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,2,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,2,0,0,0);
+    // bitmap 1
+    bitmap++;
+    addLineTobitmap(bitmap, 0, 2, 2, 2, 2, 2, 2, 2, 2);
+    addLineTobitmap(bitmap, 1, 2, 2, 2, 2, 2, 0, 2, 2);
+    addLineTobitmap(bitmap, 2, 2, 2, 2, 2, 2, 0, 2, 2);
+    addLineTobitmap(bitmap, 3, 2, 2, 2, 2, 2, 0, 2, 0);
+    addLineTobitmap(bitmap, 4, 2, 0, 2, 0, 2, 0, 2, 0);
+    addLineTobitmap(bitmap, 5, 2, 0, 0, 0, 2, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 2, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 2, 0, 0, 0);
 
-  // bitmap 2
-  bitmap++;
-  addLineTobitmap(bitmap,0,3,3,3,3,0,3,3,3);
-  addLineTobitmap(bitmap,1,3,3,3,3,0,0,3,3);
-  addLineTobitmap(bitmap,2,3,3,3,3,0,0,3,3);
-  addLineTobitmap(bitmap,3,3,3,3,3,0,0,3,0);
-  addLineTobitmap(bitmap,4,3,0,3,0,0,0,3,0);
-  addLineTobitmap(bitmap,5,3,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,0,0,0,0);
+    // bitmap 2
+    bitmap++;
+    addLineTobitmap(bitmap, 0, 3, 3, 3, 3, 0, 3, 3, 3);
+    addLineTobitmap(bitmap, 1, 3, 3, 3, 3, 0, 0, 3, 3);
+    addLineTobitmap(bitmap, 2, 3, 3, 3, 3, 0, 0, 3, 3);
+    addLineTobitmap(bitmap, 3, 3, 3, 3, 3, 0, 0, 3, 0);
+    addLineTobitmap(bitmap, 4, 3, 0, 3, 0, 0, 0, 3, 0);
+    addLineTobitmap(bitmap, 5, 3, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  // bitmap 3
-  bitmap++;
-  addLineTobitmap(bitmap,0,4,4,4,4,0,4,4,4);
-  addLineTobitmap(bitmap,1,4,4,4,4,0,0,4,4);
-  addLineTobitmap(bitmap,2,4,4,4,4,0,0,4,4);
-  addLineTobitmap(bitmap,3,4,4,4,4,0,0,4,0);
-  addLineTobitmap(bitmap,4,4,0,4,0,0,0,4,0);
-  addLineTobitmap(bitmap,5,4,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,0,0,0,0);
+    // bitmap 3
+    bitmap++;
+    addLineTobitmap(bitmap, 0, 4, 4, 4, 4, 0, 4, 4, 4);
+    addLineTobitmap(bitmap, 1, 4, 4, 4, 4, 0, 0, 4, 4);
+    addLineTobitmap(bitmap, 2, 4, 4, 4, 4, 0, 0, 4, 4);
+    addLineTobitmap(bitmap, 3, 4, 4, 4, 4, 0, 0, 4, 0);
+    addLineTobitmap(bitmap, 4, 4, 0, 4, 0, 0, 0, 4, 0);
+    addLineTobitmap(bitmap, 5, 4, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  // bitmap 4
-  bitmap++;
-  addLineTobitmap(bitmap,0,5,5,5,5,0,5,5,5);
-  addLineTobitmap(bitmap,1,5,5,5,5,0,0,5,5);
-  addLineTobitmap(bitmap,2,5,5,5,5,0,0,5,5);
-  addLineTobitmap(bitmap,3,5,5,5,5,0,0,5,0);
-  addLineTobitmap(bitmap,4,5,0,5,0,0,0,5,0);
-  addLineTobitmap(bitmap,5,5,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,0,0,0,0);
+    // bitmap 4
+    bitmap++;
+    addLineTobitmap(bitmap, 0, 5, 5, 5, 5, 0, 5, 5, 5);
+    addLineTobitmap(bitmap, 1, 5, 5, 5, 5, 0, 0, 5, 5);
+    addLineTobitmap(bitmap, 2, 5, 5, 5, 5, 0, 0, 5, 5);
+    addLineTobitmap(bitmap, 3, 5, 5, 5, 5, 0, 0, 5, 0);
+    addLineTobitmap(bitmap, 4, 5, 0, 5, 0, 0, 0, 5, 0);
+    addLineTobitmap(bitmap, 5, 5, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  // bitmap 5
-  bitmap++;
-  addLineTobitmap(bitmap,0,6,6,6,6,0,6,6,6);
-  addLineTobitmap(bitmap,1,6,6,6,6,0,0,6,6);
-  addLineTobitmap(bitmap,2,6,6,6,6,0,0,6,6);
-  addLineTobitmap(bitmap,3,6,6,6,6,0,0,6,0);
-  addLineTobitmap(bitmap,4,6,0,6,0,0,0,6,0);
-  addLineTobitmap(bitmap,5,6,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,0,0,0,0);
+    // bitmap 5
+    bitmap++;
+    addLineTobitmap(bitmap, 0, 6, 6, 6, 6, 0, 6, 6, 6);
+    addLineTobitmap(bitmap, 1, 6, 6, 6, 6, 0, 0, 6, 6);
+    addLineTobitmap(bitmap, 2, 6, 6, 6, 6, 0, 0, 6, 6);
+    addLineTobitmap(bitmap, 3, 6, 6, 6, 6, 0, 0, 6, 0);
+    addLineTobitmap(bitmap, 4, 6, 0, 6, 0, 0, 0, 6, 0);
+    addLineTobitmap(bitmap, 5, 6, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  // bitmap 6
-  bitmap++;
-  addLineTobitmap(bitmap,0,7,7,7,7,0,7,7,7);
-  addLineTobitmap(bitmap,1,7,7,7,7,0,0,7,7);
-  addLineTobitmap(bitmap,2,7,7,7,7,0,0,7,7);
-  addLineTobitmap(bitmap,3,7,7,7,7,0,0,7,0);
-  addLineTobitmap(bitmap,4,7,0,7,0,0,0,7,0);
-  addLineTobitmap(bitmap,5,7,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,0,0,0,0);
+    // bitmap 6
+    bitmap++;
+    addLineTobitmap(bitmap, 0, 7, 7, 7, 7, 0, 7, 7, 7);
+    addLineTobitmap(bitmap, 1, 7, 7, 7, 7, 0, 0, 7, 7);
+    addLineTobitmap(bitmap, 2, 7, 7, 7, 7, 0, 0, 7, 7);
+    addLineTobitmap(bitmap, 3, 7, 7, 7, 7, 0, 0, 7, 0);
+    addLineTobitmap(bitmap, 4, 7, 0, 7, 0, 0, 0, 7, 0);
+    addLineTobitmap(bitmap, 5, 7, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  // bitmap 7
-  bitmap++;
-  addLineTobitmap(bitmap,0,1,1,1,1,0,1,1,1);
-  addLineTobitmap(bitmap,1,1,1,1,1,0,0,1,1);
-  addLineTobitmap(bitmap,2,1,1,1,1,0,0,1,1);
-  addLineTobitmap(bitmap,3,1,1,1,1,0,0,1,0);
-  addLineTobitmap(bitmap,4,1,0,1,0,0,0,1,0);
-  addLineTobitmap(bitmap,5,1,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,6,0,0,0,0,0,0,0,0);
-  addLineTobitmap(bitmap,7,0,0,0,0,0,0,0,0);
+    // bitmap 7
+    bitmap++;
+    addLineTobitmap(bitmap, 0, 1, 1, 1, 1, 0, 1, 1, 1);
+    addLineTobitmap(bitmap, 1, 1, 1, 1, 1, 0, 0, 1, 1);
+    addLineTobitmap(bitmap, 2, 1, 1, 1, 1, 0, 0, 1, 1);
+    addLineTobitmap(bitmap, 3, 1, 1, 1, 1, 0, 0, 1, 0);
+    addLineTobitmap(bitmap, 4, 1, 0, 1, 0, 0, 0, 1, 0);
+    addLineTobitmap(bitmap, 5, 1, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
+    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  currentBitmap = 7;
-  targetBitmap = 7;
-  lastTime = millis();
+    currentBitmap = 7;
+    targetBitmap = 7;
+    lastTime = millis();
 }
 
 void loop()
