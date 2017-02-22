@@ -159,18 +159,16 @@ void writeByte(byte myByte)
 {
     for (int b = 0; b < 8; b++)
     {  // converting it to binary from colour code.
+        digitalWrite(clock, LOW);
+        
+        if ((myByte & bits[b])  > 0)
+            digitalWrite(data, HIGH);
+        else
+            digitalWrite(data, LOW);
+            
+        digitalWrite(clock, HIGH); 
+        delayMicroseconds(10);
         digitalWrite(clock, LOW); 
-    if ((myByte & bits[b])  > 0)
-    {
-        digitalWrite(data, HIGH);
-    } 
-    else
-    {
-        digitalWrite(data, LOW);
-    }
-    digitalWrite(clock, HIGH); 
-    delayMicroseconds(10);
-    digitalWrite(clock, LOW); 
     }
 }
 
@@ -183,57 +181,55 @@ void matrixInit()
 
 void handleAnimations()
 {      
-  if(currentBitmap != targetBitmap){
-    // the function takes 3 variables
-    drawAnimationToDisplay(currentBitmap, targetBitmap, step); 
-    delayCounter++;
-    if(delayCounter > stepDelay){
-      step--;
-    }
-    if(step < 0){
-      step = 7;
-      currentBitmap = targetBitmap;
-    }
-  } 
-  else {
-    drawBitmapToDisplay(currentBitmap); 
-  }
+    if (currentBitmap != targetBitmap)
+    {
+        // the function takes 3 variables
+        drawAnimationToDisplay(currentBitmap, targetBitmap, step); 
+        delayCounter++;
+        if (delayCounter > stepDelay)
+            step--;
+        if (step < 0)
+        {
+            step = 7;
+            currentBitmap = targetBitmap;
+        }
+    } 
+    else
+        drawBitmapToDisplay(currentBitmap); 
 }
 
-void drawBitmapToDisplay(int bitmap) {
-  for(int x = 0; x < 8; x++) {
-    for (int y = 0 ; y < 8; y++) {
-      //copies the bitmap to be displayed ( in memory )
-      displayPicture[x][y] = bitmaps[bitmap][x][y];
-    }
-  }    
+void drawBitmapToDisplay(int bitmap)
+{
+    for(int x = 0; x < 8; x++)
+        for (int y = 0; y < 8; y++) //copies the bitmap to be displayed ( in memory )
+            displayPicture[x][y] = bitmaps[bitmap][x][y];
 }
 
-void drawAnimationToDisplay(int bitmap, int targetBitmap, int step) {  
-  switch (animationStyle) {
-  case 0:   // slide transition
-    for(int x = 0; x < 8-step; x++) {
-      for (int y = 0 ; y < 8; y++) {
-        displayPicture[x][y] = bitmaps[targetBitmap][x+step][y];
-      }
+void drawAnimationToDisplay(int bitmap, int targetBitmap, int step)
+{  
+    switch (animationStyle)
+    {
+        case 0:   // slide transition
+        for (int x = 0; x < 8 - step; x++)
+            for (int y = 0 ; y < 8; y++)
+                displayPicture[x][y] = bitmaps[targetBitmap][x+step][y];
+        
+        for (int x = 0; x < step; x++)
+            for (int y = 0 ; y < 8; y++)
+                displayPicture[8-step+x][y] = bitmaps[bitmap][x][y];
+                
+        break;
+        
+        case 1:  // frame by frame
+        
+        for(int x = 0; x < 8; x++)
+            for (int y = 0 ; y < 8; y++)
+                displayPicture[x][y] = bitmaps[bitmap][x][y];
+        break;
     }
-    for(int x = 0; x < step ;x++) {
-      for (int y = 0 ; y < 8;y++) {
-        displayPicture[8-step+x][y] = bitmaps[bitmap][x][y];
-      }
-    }
-    break;
-  case 1:  // frame by frame
-    for(int x = 0; x < 8; x++) {
-      for (int y = 0 ; y < 8; y++) {
-        displayPicture[x][y] = bitmaps[bitmap][x][y];
-      }
-    }
-    break;  
-  }
 }
 
-void addLineTobitmap(int bitmap, int line, byte a,byte b,byte c, byte d, byte e, byte f,byte g, byte h)
+void addLineTobitmap(int bitmap, int line, byte a, byte b, byte c, byte d, byte e, byte f, byte g, byte h)
 {
     bitmaps[bitmap][7][line] = a;
     bitmaps[bitmap][6][line] = b;
