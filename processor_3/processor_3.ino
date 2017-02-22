@@ -19,6 +19,9 @@ int clock = 11;  // pin SCK del display
 int data = 13;   // pin DI del display
 int cs = 12;     // pin CS del display
 
+/*******************/
+/* RGB LED DISPLAY */
+/*******************/
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -36,12 +39,17 @@ unsigned int delayCounter;           // holder for the delay, as to not hog to p
 int animationStyle = 0;     // different types of animation 0 = slide 1 = frame replace
 unsigned long lastTime;     // display refresh time
 //////////////////////////////
+/*******************/
+
 
 /******************/
 /* GAME MECHANICS */
 /******************/
 bool shipsPlaced = false;
 bool waitingOnOpponent = false;
+
+byte myShipsDisplay[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+byte tmpShipsDisplay[8][8];
 /******************/
 
 
@@ -82,17 +90,36 @@ void loop()
 int main()
 {
     init();
+    Serial.begin(9600);
+    
+    initGame();
     initMatrix();
 
-    Serial.begin(9600);
-    Serial.println("Hello!");
+    // Reset the display
+    placeShips();
+}
+
+void initGame()
+{
+    Serial.println("Starting Battleship...");
     Serial.flush();
 }
 
+void initMatrix()
+{
+    pinMode(clock, OUTPUT); // sets the digital pin as output 
+    pinMode(data, OUTPUT); 
+    pinMode(cs, OUTPUT); 
+
+    drawFrame(myShipsDisplay);
+    drawFrame(myShipsDisplay);
+}
 
 char findInput()
 {
     char action = keypad.getKey();
+    Serial.println("Waiting on input");
+    Serial.flush();
 
     // Flash an LED
     while (action == 0)
@@ -101,32 +128,62 @@ char findInput()
         action = keypad.getKey();
     }
 
+    Serial.println("Got valid input");
+    Serial.flush();
     return action;
 }
 
 // Place ALL ships
 void placeShips()
 {
-    
+    while (1)
+        placeShip();
 }
 
 void placeShip()
 {
+    // perform deep copy of array each time around for displaying. should work
     shipsPlaced = true;
     
     char action = findInput();
-    char row = 0;
-    char col = 0;
+    int row = 0;
+    int col = 0;
     bool settingRows = true;
 
     while (action != '#')
     {
-        
+        if (action == '*')
+            settingRows = !settingRows;
+        else if (action == '0')
+        {
+            // something
+        }
+        else if (action == '9')
+        {
+            // something
+        }
+        else
+        {
+            myShipsDisplay[row][col] = 0;
+            drawFrame(myShipsDisplay);
+            drawFrame(myShipsDisplay);
+            settingRows ? row = (int)action - 49 : col = (int)action - 49;
+            myShipsDisplay[row][col] = 4;
+            drawFrame(myShipsDisplay);
+                        drawFrame(myShipsDisplay);
+        }
+        action = findInput();
     }
     
+    Serial.print("Row: ");
+    Serial.println(row);
+
+    Serial.print("Col: ");
+    Serial.println(col);
+    Serial.flush();
 }
 
-
+// TODO: DEBUG THIS PIECE OF GARBAGE
 void drawFrame(byte frame[8][8])
 {
     digitalWrite(clock, LOW);  //sets the clock for each display, running through 0 then 1
@@ -165,13 +222,6 @@ void writeByte(byte myByte)
         delayMicroseconds(10);
         digitalWrite(clock, LOW); 
     }
-}
-
-void initMatrix()
-{
-    pinMode(clock, OUTPUT); // sets the digital pin as output 
-    pinMode(data, OUTPUT); 
-    pinMode(cs, OUTPUT); 
 }
 
 void setBitmap(int bitmap)
