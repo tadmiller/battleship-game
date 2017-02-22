@@ -1,3 +1,18 @@
+#include <Keypad.h>
+#include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <EEPROM.h>
+
+// KEYPAD CODE
+const byte ROWS = 4; //four rows
+const byte COLS = 3; //three columns
+char keys[ROWS][COLS] = { {'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'} };
+byte rowPins[ROWS] = {8, 7, 6, 5}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {4, 3, 2}; //connect to the column pinouts of the keypad
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+
+// RGB 8x8 PROCESSOR CODE
 int bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
 
 int clock = 11;  // pin SCK del display
@@ -6,6 +21,8 @@ int cs = 12;     // pin CS del display
 
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
+
+//Ship myShip(3, 3);
 
 ////////////////
 int currentBitmap = 0;      // current displayed bitmap, per display
@@ -20,11 +37,20 @@ int animationStyle = 0;     // different types of animation 0 = slide 1 = frame 
 unsigned long lastTime;     // display refresh time
 //////////////////////////////
 
+/******************/
+/* GAME MECHANICS */
+/******************/
+bool shipsPlaced = false;
+bool waitingOnOpponent = false;
+/******************/
+
+
+/**
 void setup()
 {
-    Serial.begin(115200);  // used for debug
+    Serial.begin(9600);  // used for debug
 
-    matrixInit();
+    initMatrix();
     int bitmap = 0;
 
     // black color for buildings 0
@@ -45,16 +71,81 @@ void setup()
 
 void loop()
 {
-    if(currentBitmap == targetBitmap)
+    setBitmap(0);
+    drawFrame(displayPicture);
+
+    if (!shipsPlaced)
+        placeShip();
+}
+*/
+
+int main()
+{
+    init();
+
+    Serial.begin(9600);
+    Serial.println("Hello!");
+    Serial.flush();
+}
+
+
+char findInput()
+{
+    char action = keypad.getKey();
+
+    // Flash an LED
+    while (action == 0)
     {
-        targetBitmap%=8;  // there are 8 frames, from 0 to 7
+        delay(50);
+        action = keypad.getKey();
     }
 
-    if((millis() - lastTime) > 70)
+    return action;
+}
+
+// Place ALL ships
+void placeShips()
+{
+    
+}
+
+void placeShip()
+{
+    shipsPlaced = true;
+    
+    char action = findInput();
+    char row = 0;
+    char col = 0;
+    bool settingRows = true;
+
+    while (action != '#')
     {
-        handleAnimations();
-        lastTime = millis();
+        
     }
+    
+}
+
+
+void drawFrame(byte frame[8][8])
+{
+    digitalWrite(clock, LOW);  //sets the clock for each display, running through 0 then 1
+    digitalWrite(data, LOW);   //ditto for data.
+    delayMicroseconds(10);
+    digitalWrite(cs, LOW);     //ditto for cs.
+    delayMicroseconds(10);
+    
+    for(int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            // Drawing the grid. x across then down to next y then x across.
+            writeByte(frame[x][y]);  
+            delayMicroseconds(10);
+        }
+    }
+    
+    delayMicroseconds(10);
+    digitalWrite(cs, HIGH);
 }
 
 // prints out bytes. Each colour is printed out.
@@ -64,7 +155,7 @@ void writeByte(byte myByte)
     {  // converting it to binary from colour code.
         digitalWrite(clock, LOW);
         
-        if ((myByte & bits[b])  > 0)
+        if ((myByte & bits[b]) > 0)
             digitalWrite(data, HIGH);
         else
             digitalWrite(data, LOW);
@@ -75,61 +166,18 @@ void writeByte(byte myByte)
     }
 }
 
-void matrixInit()
+void initMatrix()
 {
     pinMode(clock, OUTPUT); // sets the digital pin as output 
     pinMode(data, OUTPUT); 
     pinMode(cs, OUTPUT); 
 }
 
-void handleAnimations()
-{      
-    if (currentBitmap != targetBitmap)
-    {
-        // the function takes 3 variables
-        drawAnimationToDisplay(currentBitmap, targetBitmap, step); 
-        delayCounter++;
-        if (delayCounter > stepDelay)
-            step--;
-        if (step < 0)
-        {
-            step = 7;
-            currentBitmap = targetBitmap;
-        }
-    } 
-    else
-        drawBitmap(currentBitmap); 
-}
-
-void drawBitmap(int bitmap)
+void setBitmap(int bitmap)
 {
     for(int x = 0; x < 8; x++)
         for (int y = 0; y < 8; y++) //copies the bitmap to be displayed ( in memory )
             displayPicture[x][y] = bitmaps[bitmap][x][y];
-}
-
-void drawAnimationToDisplay(int bitmap, int targetBitmap, int step)
-{  
-    switch (animationStyle)
-    {
-        case 0:   // slide transition
-        for (int x = 0; x < 8 - step; x++)
-            for (int y = 0 ; y < 8; y++)
-                displayPicture[x][y] = bitmaps[targetBitmap][x+step][y];
-        
-        for (int x = 0; x < step; x++)
-            for (int y = 0 ; y < 8; y++)
-                displayPicture[8-step+x][y] = bitmaps[bitmap][x][y];
-                
-        break;
-        
-        case 1:  // frame by frame
-        
-        for(int x = 0; x < 8; x++)
-            for (int y = 0 ; y < 8; y++)
-                displayPicture[x][y] = bitmaps[bitmap][x][y];
-        break;
-    }
 }
 
 void addLineTobitmap(int bitmap, int line, byte a, byte b, byte c, byte d, byte e, byte f, byte g, byte h)
@@ -143,3 +191,5 @@ void addLineTobitmap(int bitmap, int line, byte a, byte b, byte c, byte d, byte 
     bitmaps[bitmap][1][line] = g;
     bitmaps[bitmap][0][line] = h;
 }
+
+
