@@ -82,6 +82,7 @@ void loop()
 int main()
 {
     init();
+    initMatrix();
 
     Serial.begin(9600);
     Serial.println("Hello!");
