@@ -115,43 +115,38 @@ void setup() {
   lastTime = millis();
 }
 
-void loop()
-{
-    if(currentBitmap == targetBitmap)
-    {
-        targetBitmap++;
-        targetBitmap%=8;  // there are 8 frames, from 0 to 7
-    }
+void loop() {
+  if(currentBitmap == targetBitmap) {
+    targetBitmap++;
+    targetBitmap%=8;  // there are 8 frames, from 0 to 7
+  }
 
-    if((millis() - lastTime) > 70)
-    {
-        handleAnimations();
-        lastTime = millis();
-    }
-  
-    drawFrame(displayPicture);
+  if((millis() - lastTime) > 70) {
+    handleAnimations();
+    lastTime = millis();
+    Serial.print("currentBitmap: ");
+    Serial.print(currentBitmap);
+    Serial.print(" targetBitmap: ");
+    Serial.println(targetBitmap);
+  }
+  drawFrame(displayPicture);
 }
 
-void drawFrame(byte frame[8][8])
-{
-    digitalWrite(clock, LOW);  //sets the clock for each display, running through 0 then 1
-    digitalWrite(data, LOW);   //ditto for data.
-    delayMicroseconds(10);
-    digitalWrite(cs, LOW);     //ditto for cs.
-    delayMicroseconds(10);
-    
-    for(int x = 0; x < 8; x++)
-    {
-        for (int y = 0; y < 8; y++)
-        {
-            // Drawing the grid. x across then down to next y then x across.
-            writeByte(frame[x][y]);  
-            delayMicroseconds(10);
-        }
+void drawFrame(byte frame[8][8]) {
+  digitalWrite(clock, LOW);  //sets the clock for each display, running through 0 then 1
+  digitalWrite(data, LOW);   //ditto for data.
+  delayMicroseconds(10);
+  digitalWrite(cs, LOW);     //ditto for cs.
+  delayMicroseconds(10);
+  for(int x = 0; x < 8; x++) {
+    for (int y = 0; y < 8; y++) {
+      //Drawing the grid. x across then down to next y then x across.
+      writeByte(frame[x][y]);  
+      delayMicroseconds(10);
     }
-    
-    delayMicroseconds(10);
-    digitalWrite(cs, HIGH);
+  }
+  delayMicroseconds(10);
+  digitalWrite(cs, HIGH);
 }
 
 // prints out bytes. Each colour is printed out.
