@@ -6,13 +6,19 @@ int cs = 12;     // pin CS del display
 
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
+
+////////////////
 int currentBitmap = 0;      // current displayed bitmap, per display
-int targetBitmap = 1;       // Desired image, for the animation to strive for, per display
+int targetBitmap = 0;       // Desired image, for the animation to strive for, per display
 int step;                   // animation step, usually from 0 to 8, per screen
 int stepDelay = 19;         // the wait time between each animation frame
+//////////////////////////
+
+//////////////////////////////
 unsigned int delayCounter;           // holder for the delay, as to not hog to processor, per screen
 int animationStyle = 0;     // different types of animation 0 = slide 1 = frame replace
 unsigned long lastTime;     // display refresh time
+//////////////////////////////
 
 void setup()
 {
@@ -25,7 +31,7 @@ void setup()
     // sky rotating color 1-7
   
     // bitmap 0
-    addLineTobitmap(bitmap, 0, 1, 1, 1, 1, 0, 1, 1, 1);
+    addLineTobitmap(bitmap, 0, 1, 2, 3, 4, 5, 6, 100, 1);
     addLineTobitmap(bitmap, 1, 1, 1, 1, 1, 0, 0, 1, 1);
     addLineTobitmap(bitmap, 2, 1, 1, 1, 1, 0, 0, 1, 1);
     addLineTobitmap(bitmap, 3, 1, 1, 1, 1, 0, 0, 1, 0);
@@ -34,85 +40,6 @@ void setup()
     addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
     addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    // bitmap 1
-    bitmap++;
-    addLineTobitmap(bitmap, 0, 2, 2, 2, 2, 2, 2, 2, 2);
-    addLineTobitmap(bitmap, 1, 2, 2, 2, 2, 2, 0, 2, 2);
-    addLineTobitmap(bitmap, 2, 2, 2, 2, 2, 2, 0, 2, 2);
-    addLineTobitmap(bitmap, 3, 2, 2, 2, 2, 2, 0, 2, 0);
-    addLineTobitmap(bitmap, 4, 2, 0, 2, 0, 2, 0, 2, 0);
-    addLineTobitmap(bitmap, 5, 2, 0, 0, 0, 2, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 2, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 2, 0, 0, 0);
-
-    // bitmap 2
-    bitmap++;
-    addLineTobitmap(bitmap, 0, 3, 3, 3, 3, 0, 3, 3, 3);
-    addLineTobitmap(bitmap, 1, 3, 3, 3, 3, 0, 0, 3, 3);
-    addLineTobitmap(bitmap, 2, 3, 3, 3, 3, 0, 0, 3, 3);
-    addLineTobitmap(bitmap, 3, 3, 3, 3, 3, 0, 0, 3, 0);
-    addLineTobitmap(bitmap, 4, 3, 0, 3, 0, 0, 0, 3, 0);
-    addLineTobitmap(bitmap, 5, 3, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    // bitmap 3
-    bitmap++;
-    addLineTobitmap(bitmap, 0, 4, 4, 4, 4, 0, 4, 4, 4);
-    addLineTobitmap(bitmap, 1, 4, 4, 4, 4, 0, 0, 4, 4);
-    addLineTobitmap(bitmap, 2, 4, 4, 4, 4, 0, 0, 4, 4);
-    addLineTobitmap(bitmap, 3, 4, 4, 4, 4, 0, 0, 4, 0);
-    addLineTobitmap(bitmap, 4, 4, 0, 4, 0, 0, 0, 4, 0);
-    addLineTobitmap(bitmap, 5, 4, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    // bitmap 4
-    bitmap++;
-    addLineTobitmap(bitmap, 0, 5, 5, 5, 5, 0, 5, 5, 5);
-    addLineTobitmap(bitmap, 1, 5, 5, 5, 5, 0, 0, 5, 5);
-    addLineTobitmap(bitmap, 2, 5, 5, 5, 5, 0, 0, 5, 5);
-    addLineTobitmap(bitmap, 3, 5, 5, 5, 5, 0, 0, 5, 0);
-    addLineTobitmap(bitmap, 4, 5, 0, 5, 0, 0, 0, 5, 0);
-    addLineTobitmap(bitmap, 5, 5, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    // bitmap 5
-    bitmap++;
-    addLineTobitmap(bitmap, 0, 6, 6, 6, 6, 0, 6, 6, 6);
-    addLineTobitmap(bitmap, 1, 6, 6, 6, 6, 0, 0, 6, 6);
-    addLineTobitmap(bitmap, 2, 6, 6, 6, 6, 0, 0, 6, 6);
-    addLineTobitmap(bitmap, 3, 6, 6, 6, 6, 0, 0, 6, 0);
-    addLineTobitmap(bitmap, 4, 6, 0, 6, 0, 0, 0, 6, 0);
-    addLineTobitmap(bitmap, 5, 6, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    // bitmap 6
-    bitmap++;
-    addLineTobitmap(bitmap, 0, 7, 7, 7, 7, 0, 7, 7, 7);
-    addLineTobitmap(bitmap, 1, 7, 7, 7, 7, 0, 0, 7, 7);
-    addLineTobitmap(bitmap, 2, 7, 7, 7, 7, 0, 0, 7, 7);
-    addLineTobitmap(bitmap, 3, 7, 7, 7, 7, 0, 0, 7, 0);
-    addLineTobitmap(bitmap, 4, 7, 0, 7, 0, 0, 0, 7, 0);
-    addLineTobitmap(bitmap, 5, 7, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    // bitmap 7
-    bitmap++;
-    addLineTobitmap(bitmap, 0, 1, 1, 1, 1, 0, 1, 1, 1);
-    addLineTobitmap(bitmap, 1, 1, 1, 1, 1, 0, 0, 1, 1);
-    addLineTobitmap(bitmap, 2, 1, 1, 1, 1, 0, 0, 1, 1);
-    addLineTobitmap(bitmap, 3, 1, 1, 1, 1, 0, 0, 1, 0);
-    addLineTobitmap(bitmap, 4, 1, 0, 1, 0, 0, 0, 1, 0);
-    addLineTobitmap(bitmap, 5, 1, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    currentBitmap = 7;
-    targetBitmap = 7;
     lastTime = millis();
 }
 
@@ -120,7 +47,6 @@ void loop()
 {
     if(currentBitmap == targetBitmap)
     {
-        targetBitmap++;
         targetBitmap%=8;  // there are 8 frames, from 0 to 7
     }
 
@@ -129,30 +55,6 @@ void loop()
         handleAnimations();
         lastTime = millis();
     }
-  
-    drawFrame(displayPicture);
-}
-
-void drawFrame(byte frame[8][8])
-{
-    digitalWrite(clock, LOW);  //sets the clock for each display, running through 0 then 1
-    digitalWrite(data, LOW);   //ditto for data.
-    delayMicroseconds(10);
-    digitalWrite(cs, LOW);     //ditto for cs.
-    delayMicroseconds(10);
-    
-    for(int x = 0; x < 8; x++)
-    {
-        for (int y = 0; y < 8; y++)
-        {
-            // Drawing the grid. x across then down to next y then x across.
-            writeByte(frame[x][y]);  
-            delayMicroseconds(10);
-        }
-    }
-    
-    delayMicroseconds(10);
-    digitalWrite(cs, HIGH);
 }
 
 // prints out bytes. Each colour is printed out.
@@ -196,10 +98,10 @@ void handleAnimations()
         }
     } 
     else
-        drawBitmapToDisplay(currentBitmap); 
+        drawBitmap(currentBitmap); 
 }
 
-void drawBitmapToDisplay(int bitmap)
+void drawBitmap(int bitmap)
 {
     for(int x = 0; x < 8; x++)
         for (int y = 0; y < 8; y++) //copies the bitmap to be displayed ( in memory )
