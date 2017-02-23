@@ -137,10 +137,10 @@ char findInput()
 void placeShips()
 {
     while (1)
-        placeShip();
+        placeShip(1);
 }
 
-void placeShip()
+void placeShip(int size)
 {
     // perform deep copy of array each time around for displaying. should work
     shipsPlaced = true;
