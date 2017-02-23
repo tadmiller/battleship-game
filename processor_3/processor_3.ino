@@ -48,10 +48,9 @@ int cs = 12;     // pin CS del display
 /*******************/
 /* RGB LED DISPLAY */
 /*******************/
-#define GREEN 8
-#define RED 2
 #define EMPTY 2
 #define HIT 100
+#define DESTROY 44
 #define SHIP 8
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
@@ -216,7 +215,7 @@ void placeShip(int size)
                 // add for loop..
                 myShipsDisplay[row][col] = EMPTY;
                 col--;
-                myShipsDisplay[row][col] = GREEN;
+                myShipsDisplay[row][col] = SHIP;
             }
             else
             {
@@ -230,7 +229,7 @@ void placeShip(int size)
                 // add for loop..
                 myShipsDisplay[row][col] = EMPTY;
                 col++;
-                myShipsDisplay[row][col] = GREEN;
+                myShipsDisplay[row][col] = SHIP;
             }
             else
             {
