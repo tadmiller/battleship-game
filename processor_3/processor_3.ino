@@ -22,7 +22,7 @@ int cs = 12;     // pin CS del display
 /*******************/
 /* RGB LED DISPLAY */
 /*******************/
-#define GREEN 4
+#define GREEN 120
 #define RED 2
 #define EMPTY 0
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
@@ -162,9 +162,7 @@ void placeShip(int size)
 
     while (action != '#')
     {
-        if (action == '*')
-            settingRows = !settingRows;
-        else if (action == '0')
+        if (action == '0')
         {
             // something
         }
