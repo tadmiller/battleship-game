@@ -101,12 +101,14 @@ int main()
     placeShips();
 }
 
+// Should add here "WELCOME TO BATTLESHIP" on RGB display
 void initGame()
 {
     Serial.println("Starting Battleship...");
     Serial.flush();
 }
 
+// Initialize the matrix. Might need to be in an object eventually
 void initMatrix()
 {
     pinMode(clock, OUTPUT); // sets the digital pin as output 
@@ -116,6 +118,7 @@ void initMatrix()
     updateFrame();
 }
 
+// Get an input from the keypad
 char findInput()
 {
     char action = keypad.getKey();
@@ -141,6 +144,8 @@ void placeShips()
         placeShip(1);
 }
 
+// Place one ship
+// @args: size of ship
 void placeShip(int size)
 {
     // perform deep copy of array each time around for displaying. should work
