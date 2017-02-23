@@ -284,7 +284,7 @@ void updateFrame()
 {
     drawFrame(myShipsDisplay);
     delay(10);
-    drawFrame(myShipsDisplay);
+    //drawFrame(myShipsDisplay);
 }
 
 // TODO: DEBUG THIS PIECE OF GARBAGE
