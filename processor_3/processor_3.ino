@@ -22,9 +22,11 @@ int cs = 12;     // pin CS del display
 /*******************/
 /* RGB LED DISPLAY */
 /*******************/
-#define GREEN 120
+#define GREEN 8
 #define RED 2
-#define EMPTY 0
+#define EMPTY 2
+#define HIT 100
+#define SHIP 8
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -51,7 +53,7 @@ unsigned long lastTime;     // display refresh time
 bool shipsPlaced = false;
 bool waitingOnOpponent = false;
 
-byte myShipsDisplay[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 byte tmpShipsDisplay[8][8];
 /******************/
 
