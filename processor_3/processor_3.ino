@@ -22,8 +22,9 @@ int cs = 12;     // pin CS del display
 /*******************/
 /* RGB LED DISPLAY */
 /*******************/
-#define GREEN 4;
-#define RED 2;
+#define GREEN 4
+#define RED 2
+#define EMPTY 0
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -144,22 +145,20 @@ void placeShips()
         placeShip(1);
 }
 
+bool isValidSpot(int row, int col)
+{
+    return myShipsDisplay[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
+}
+
 // Place one ship
+// KNOWN BUGS: Can't place in spot 0x0
+// TODO: Add function that finds valid spot for ship of length int size
 // @args: size of ship
 void placeShip(int size)
 {
-    // perform deep copy of array each time around for displaying. should work
-    shipsPlaced = true;
-    
     char action = findInput();
     int row = 0;
     int col = 0;
-
-    int lastRow = 0;
-    int lastCol = 0;
-    bool settingRows = true;
-
-    updateFrame();
 
     while (action != '#')
     {
@@ -173,6 +172,43 @@ void placeShip(int size)
         {
             // something
         }
+        else if (action == '2') // up
+        {
+            if (isValidSpot(row, col + 1))
+            {
+                // add for loop..
+                myShipsDisplay[row][col] = EMPTY;
+                col++;
+                myShipsDisplay[row][col] = GREEN;
+            }
+            else
+            {
+                // invalid
+            }
+        }
+        else if (action == '8') // down
+        {
+            if (isValidSpot(row, col - 1))
+            {
+                // add for loop..
+                myShipsDisplay[row][col] = EMPTY;
+                col--;
+                myShipsDisplay[row][col] = GREEN;
+            }
+            else
+            {
+                // invalid
+            }
+        }
+        else if (action == '4') // left
+        {
+            
+        }
+        else if (action == '6') // right
+        {
+            
+        }
+        /**
         else
         {
             settingRows ? row = (int)action - 49 : col = (int)action - 49;
@@ -203,7 +239,8 @@ void placeShip(int size)
                     col = lastCol;
                 }
             }
-        }
+        }*/
+        updateFrame();
         action = findInput();
     }
     
