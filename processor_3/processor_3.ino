@@ -182,7 +182,7 @@ Coords *findSpot(int size)
 {
     Coords *c = new Coords(random(1, 8), random(1, 8));
 
-    while (!isValidSpots(c -> getX(), c -> getY(), false, size))
+    while (!isValidSpots(c -> getX(), c -> getY(), true, size))
         c = new Coords(random(1, 8), random(1, 8));
 
     return c;
@@ -195,7 +195,7 @@ bool isValidSpots(int row, int col, bool orientation, int size)
 
     for (i = 0; i < size; i++)
     {
-        if (orientation == false)
+        if (orientation)
         {
             if (!isValidSpot(row, col + i))
                 return false;
@@ -211,11 +211,6 @@ bool isValidSpots(int row, int col, bool orientation, int size)
 bool isValidSpot(int row, int col)
 {
     return myShipsDisplay[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
-}
-
-void placeDot(int row, int col)
-{
-    
 }
 
 void cpyTmpShips()
@@ -235,6 +230,16 @@ void displayShip(int row, int col, bool orientation, int size)
             tmpShipsDisplay[row + i][col] = SHIP;   
 }
 
+void placeShip(int row, int col, bool orientation, int size)
+{
+    if (orientation)
+        for (int i = 0; i < size; i++)
+            myShipsDisplay[row][col + i] = SHIP;
+    else
+        for (int i = 0; i < size; i++)
+            myShipsDisplay[row + i][col] = SHIP;       
+}
+
 // Place one ship
 // KNOWN BUGS: Can't place in spot 0x0
 // TODO: Add function that finds valid spot for ship of length int size
@@ -242,15 +247,12 @@ void displayShip(int row, int col, bool orientation, int size)
 void placeShip(int size)
 {
     char action = findInput();
-    Serial.println("Finding spot to place in..");
     Coords *c = findSpot(size);
-    Serial.println("Found spot!");
     int row = c -> getX();
     int col = c -> getY();
-    int i;
     bool orientation = true;
 
-    while (action != '5')
+    while (true)
     {
         cpyTmpShips();
         
@@ -276,43 +278,25 @@ void placeShip(int size)
             if ((row < 7 && orientation) || (row + size < 8 && !orientation))
                 row++;
         }
-
-        displayShip(row, col, orientation, size);
-        /**
-        else
+        else if (action == '5')
         {
-            settingRows ? row = (int)action - 49 : col = (int)action - 49;
-
-            if (row == lastRow && col == lastCol && myShipsDisplay[row][col] == 4)
-                Serial.println("Invalid input");
+            if (isValidSpots(row, col, orientation, size))
+            {
+                placeShip(row, col, orientation, size);
+                break;
+            }
             else
             {
-                if (myShipsDisplay[row][col] != 4)
-                {                    
-                    myShipsDisplay[lastRow][lastCol] = 0;
-                    myShipsDisplay[row][col] = 4;
-                        
-                    lastRow = row;
-                    lastCol = col;
-                    
-                    
-                    updateFrame();
-                }
-                else
-                {
-                    myShipsDisplay[row][col] = RED;
-                    updateFrame();
-                    delay(500);
-                    myShipsDisplay[row][col] = GREEN;
-                    updateFrame();
-                    row = lastRow;
-                    col = lastCol;
-                }
+                // display all red
             }
-        }*/
+        }
+
+        displayShip(row, col, orientation, size);
         updateFrame();
         action = findInput();
     }
+
+    
     
     Serial.print("Row: ");
     Serial.println(row);
