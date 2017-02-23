@@ -148,7 +148,12 @@ void placeShip(int size)
     char action = findInput();
     int row = 0;
     int col = 0;
+
+    int lastRow = 0;
+    int lastCol = 0;
     bool settingRows = true;
+
+    updateFrame();
 
     while (action != '#')
     {
@@ -164,13 +169,34 @@ void placeShip(int size)
         }
         else
         {
-            myShipsDisplay[row][col] = 0;
-            drawFrame(myShipsDisplay);
-            drawFrame(myShipsDisplay);
             settingRows ? row = (int)action - 49 : col = (int)action - 49;
-            myShipsDisplay[row][col] = 4;
-            drawFrame(myShipsDisplay);
-                        drawFrame(myShipsDisplay);
+
+            if (row == lastRow && col == lastCol && myShipsDisplay[row][col] == 4)
+                Serial.println("Invalid input");
+            else
+            {
+                if (myShipsDisplay[row][col] != 4)
+                {                    
+                    myShipsDisplay[lastRow][lastCol] = 0;
+                    myShipsDisplay[row][col] = 4;
+                        
+                    lastRow = row;
+                    lastCol = col;
+                    
+                    
+                    updateFrame();
+                }
+                else
+                {
+                    myShipsDisplay[row][col] = 100;
+                    updateFrame();
+                    delay(500);
+                    myShipsDisplay[row][col] = 4;
+                    updateFrame();
+                    row = lastRow;
+                    col = lastCol;
+                }
+            }
         }
         action = findInput();
     }
@@ -181,6 +207,13 @@ void placeShip(int size)
     Serial.print("Col: ");
     Serial.println(col);
     Serial.flush();
+}
+
+void updateFrame()
+{
+    drawFrame(myShipsDisplay);
+    delay(10);
+    drawFrame(myShipsDisplay);
 }
 
 // TODO: DEBUG THIS PIECE OF GARBAGE
