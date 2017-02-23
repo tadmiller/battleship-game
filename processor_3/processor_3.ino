@@ -22,6 +22,8 @@ int cs = 12;     // pin CS del display
 /*******************/
 /* RGB LED DISPLAY */
 /*******************/
+#define GREEN 4;
+#define RED 2;
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -111,8 +113,7 @@ void initMatrix()
     pinMode(data, OUTPUT); 
     pinMode(cs, OUTPUT); 
 
-    drawFrame(myShipsDisplay);
-    drawFrame(myShipsDisplay);
+    updateFrame();
 }
 
 char findInput()
@@ -188,10 +189,10 @@ void placeShip(int size)
                 }
                 else
                 {
-                    myShipsDisplay[row][col] = 100;
+                    myShipsDisplay[row][col] = RED;
                     updateFrame();
                     delay(500);
-                    myShipsDisplay[row][col] = 4;
+                    myShipsDisplay[row][col] = GREEN;
                     updateFrame();
                     row = lastRow;
                     col = lastCol;
@@ -275,5 +276,3 @@ void addLineTobitmap(int bitmap, int line, byte a, byte b, byte c, byte d, byte 
     bitmaps[bitmap][1][line] = g;
     bitmaps[bitmap][0][line] = h;
 }
-
-
