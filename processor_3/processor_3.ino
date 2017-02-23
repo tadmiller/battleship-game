@@ -85,7 +85,7 @@ bool shipsPlaced = false;
 bool waitingOnOpponent = false;
 
 byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
-byte tmpShipsDisplay[8][8];
+byte tmpShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 /******************/
 
 
@@ -175,22 +175,64 @@ char findInput()
 void placeShips()
 {
     while (1)
-        placeShip(1);
+        placeShip(4);
 }
 
-Coords *findSpot()
+Coords *findSpot(int size)
 {
     Coords *c = new Coords(random(1, 8), random(1, 8));
 
-    while (!isValidSpot(c -> getX(), c -> getY()))
+    while (!isValidSpots(c -> getX(), c -> getY(), false, size))
         c = new Coords(random(1, 8), random(1, 8));
 
     return c;
 }
 
+// orientation 0 = down/up, 1 = left/right
+bool isValidSpots(int row, int col, bool orientation, int size)
+{
+    int i;
+
+    for (i = 0; i < size; i++)
+    {
+        if (orientation == false)
+        {
+            if (!isValidSpot(row, col + i))
+                return false;
+        }
+        else
+            if (!isValidSpot(row + i, col))
+                return false;
+    }
+
+    return true;
+}
+
 bool isValidSpot(int row, int col)
 {
     return myShipsDisplay[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
+}
+
+void placeDot(int row, int col)
+{
+    
+}
+
+void cpyTmpShips()
+{
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            tmpShipsDisplay[i][j] = myShipsDisplay[i][j];
+}
+
+void displayShip(int row, int col, bool orientation, int size)
+{
+    if (orientation)
+        for (int i = 0; i < size; i++)
+            tmpShipsDisplay[row][col + i] = SHIP;
+    else
+        for (int i = 0; i < size; i++)
+            tmpShipsDisplay[row + i][col] = SHIP;   
 }
 
 // Place one ship
@@ -200,78 +242,42 @@ bool isValidSpot(int row, int col)
 void placeShip(int size)
 {
     char action = findInput();
-    Coords *c = findSpot();
+    Serial.println("Finding spot to place in..");
+    Coords *c = findSpot(size);
+    Serial.println("Found spot!");
     int row = c -> getX();
     int col = c -> getY();
+    int i;
+    bool orientation = true;
 
     while (action != '5')
     {
-        if (action == '0')
-        {
-            // something
-        }
-        else if (action == '9')
-        {
-            // something
-        }
-        else if (action == '2') // up
-        {
-            if (isValidSpot(row, col - 1))
-            {
-                // add for loop..
-                myShipsDisplay[row][col] = EMPTY;
-                col--;
-                myShipsDisplay[row][col] = SHIP;
-            }
-            else
-            {
-                // invalid
-            }
-        }
-        else if (action == '8') // down
-        {
-            if (isValidSpot(row, col + 1))
-            {
-                // add for loop..
-                myShipsDisplay[row][col] = EMPTY;
+        cpyTmpShips();
+        
+        if (action == '7' && ((col + size < 9 && !orientation) || (row + size < 9 && orientation)))
+            orientation = !orientation;
+        else if (action == '8') // up
+        {   
+            if ((col + size < 8 && orientation) || (col < 7 && !orientation))
                 col++;
-                myShipsDisplay[row][col] = SHIP;
-            }
-            else
-            {
-                // invalid
-            }
+        }
+        else if (action == '2') // down
+        {
+            if (col > 0)
+                col--;
         }
         else if (action == '4') // left
         {
-          if (isValidSpot(row-1, col))
-            {
-                // add for loop..
-                myShipsDisplay[row][col] = EMPTY;
+            if (row > 0)
                 row--;
-                myShipsDisplay[row][col] = SHIP;
-            }
-            else
-            {
-                // invalid
-            }
-            
         }
         else if (action == '6') // right
-        {
-          if (isValidSpot(row+1, col))
-            {
-                // add for loop..
-                myShipsDisplay[row][col] = EMPTY;
+        {   
+            if ((row < 7 && orientation) || (row + size < 8 && !orientation))
                 row++;
-                myShipsDisplay[row][col] = SHIP;
-            }
-            else
-            {
-                // invalid
-            }
-            
         }
+
+        displayShip(row, col, orientation, size);
         /**
         else
         {
@@ -318,7 +324,7 @@ void placeShip(int size)
 
 void updateFrame()
 {
-    drawFrame(myShipsDisplay);
+    drawFrame(tmpShipsDisplay);
     delay(10);
     //drawFrame(myShipsDisplay);
 }
