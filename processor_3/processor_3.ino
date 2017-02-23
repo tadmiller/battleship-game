@@ -199,7 +199,7 @@ void placeShip(int size)
     int row = c -> getX();
     int col = c -> getY();
 
-    while (action != '#')
+    while (action != '5')
     {
         if (action == '0')
         {
@@ -210,20 +210,6 @@ void placeShip(int size)
             // something
         }
         else if (action == '2') // up
-        {
-            if (isValidSpot(row, col + 1))
-            {
-                // add for loop..
-                myShipsDisplay[row][col] = EMPTY;
-                col++;
-                myShipsDisplay[row][col] = GREEN;
-            }
-            else
-            {
-                // invalid
-            }
-        }
-        else if (action == '8') // down
         {
             if (isValidSpot(row, col - 1))
             {
@@ -237,12 +223,48 @@ void placeShip(int size)
                 // invalid
             }
         }
+        else if (action == '8') // down
+        {
+            if (isValidSpot(row, col + 1))
+            {
+                // add for loop..
+                myShipsDisplay[row][col] = EMPTY;
+                col++;
+                myShipsDisplay[row][col] = GREEN;
+            }
+            else
+            {
+                // invalid
+            }
+        }
         else if (action == '4') // left
         {
+          if (isValidSpot(row-1, col))
+            {
+                // add for loop..
+                myShipsDisplay[row][col] = EMPTY;
+                row--;
+                myShipsDisplay[row][col] = GREEN;
+            }
+            else
+            {
+                // invalid
+            }
             
         }
         else if (action == '6') // right
         {
+          if (isValidSpot(row+1, col))
+            {
+                // add for loop..
+                myShipsDisplay[row][col] = EMPTY;
+                row++;
+                myShipsDisplay[row][col] = GREEN;
+            }
+            else
+            {
+                // invalid
+            }
             
         }
         /**
