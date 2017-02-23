@@ -1,3 +1,9 @@
+/**
+ * @version 0.1
+ * 
+ * 
+ */
+
 #include <Keypad.h>
 #include <Arduino.h>
 #include <Wire.h>
@@ -243,7 +249,7 @@ void placeShip(int size)
                 // add for loop..
                 myShipsDisplay[row][col] = EMPTY;
                 row--;
-                myShipsDisplay[row][col] = GREEN;
+                myShipsDisplay[row][col] = SHIP;
             }
             else
             {
@@ -258,7 +264,7 @@ void placeShip(int size)
                 // add for loop..
                 myShipsDisplay[row][col] = EMPTY;
                 row++;
-                myShipsDisplay[row][col] = GREEN;
+                myShipsDisplay[row][col] = SHIP;
             }
             else
             {
