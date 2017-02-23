@@ -127,12 +127,8 @@ int main()
 {
     init();
     Serial.begin(9600);
-    
-    initGame();
     initMatrix();
-
-    // Reset the display
-    placeShips();
+    initGame();
 }
 
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
@@ -140,6 +136,8 @@ void initGame()
 {
     Serial.println("Starting Battleship...");
     Serial.flush();
+
+    placeShips();
 }
 
 // Initialize the matrix. Might need to be in an object eventually
@@ -174,8 +172,12 @@ char findInput()
 // Place ALL ships
 void placeShips()
 {
-    while (1)
-        placeShip(4);
+    placeShip(2);
+    placeShip(5);
+    placeShip(3);
+    placeShip(4);
+    placeShip(3);
+    placeShip(2);
 }
 
 Coords *findSpot(int size)
@@ -246,15 +248,23 @@ void placeShip(int row, int col, bool orientation, int size)
 // @args: size of ship
 void placeShip(int size)
 {
-    char action = findInput();
+
     Coords *c = findSpot(size);
     int row = c -> getX();
     int col = c -> getY();
     bool orientation = true;
+    displayShip(row, col, orientation, size);
+    updateFrame();
+
+    char action;
 
     while (true)
     {
         cpyTmpShips();
+        displayShip(row, col, orientation, size);
+        updateFrame();
+
+        action = findInput();
         
         if (action == '7' && ((col + size < 9 && !orientation) || (row + size < 9 && orientation)))
             orientation = !orientation;
@@ -290,10 +300,6 @@ void placeShip(int size)
                 // display all red
             }
         }
-
-        displayShip(row, col, orientation, size);
-        updateFrame();
-        action = findInput();
     }
 
     
