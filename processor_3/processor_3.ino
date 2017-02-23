@@ -173,7 +173,15 @@ void placeShips()
         placeShip(1);
 }
 
+Coords *findSpot()
+{
+    Coords *c = new Coords(random(1, 8), random(1, 8));
 
+    while (!isValidSpot(c -> getX(), c -> getY()))
+        c = new Coords(random(1, 8), random(1, 8));
+
+    return c;
+}
 
 bool isValidSpot(int row, int col)
 {
@@ -187,8 +195,9 @@ bool isValidSpot(int row, int col)
 void placeShip(int size)
 {
     char action = findInput();
-    int row = 0;
-    int col = 0;
+    Coords *c = findSpot();
+    int row = c -> getX();
+    int col = c -> getY();
 
     while (action != '#')
     {
