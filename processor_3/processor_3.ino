@@ -113,21 +113,24 @@ void initGame()
 void initConnection()
 {
     Serial.println("Waiting for connection from other Arduino.");
+    Serial.flush();
     
     Wire.requestFrom(8, 6);
-
+    Wire.beginTransmission(8);
 
     while (1)
     {
         Wire.write('B');
         char c = Wire.read();
         Serial.print(".");
+        Serial.flush();
         delay(50);
 
         if (c == 'B')
             break;
     }
 
+    Wire.endTransmission();
     Serial.println("Connection established");
     Serial.flush();
 }
