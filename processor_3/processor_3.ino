@@ -88,49 +88,18 @@ byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2},
 byte tmpShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 /******************/
 
-
-/**
-void setup()
-{
-    Serial.begin(9600);  // used for debug
-
-    initMatrix();
-    int bitmap = 0;
-
-    // black color for buildings 0
-    // sky rotating color 1-7
-  
-    // bitmap 0
-    addLineTobitmap(bitmap, 0, 1, 2, 3, 4, 5, 6, 100, 1);
-    addLineTobitmap(bitmap, 1, 1, 1, 1, 1, 0, 0, 1, 1);
-    addLineTobitmap(bitmap, 2, 1, 1, 1, 1, 0, 0, 1, 1);
-    addLineTobitmap(bitmap, 3, 1, 1, 1, 1, 0, 0, 1, 0);
-    addLineTobitmap(bitmap, 4, 1, 0, 1, 0, 0, 0, 1, 0);
-    addLineTobitmap(bitmap, 5, 1, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 6, 0, 0, 0, 0, 0, 0, 0, 0);
-    addLineTobitmap(bitmap, 7, 0, 0, 0, 0, 0, 0, 0, 0);
-
-    lastTime = millis();
-}
-
-void loop()
-{
-    setBitmap(0);
-    drawFrame(displayPicture);
-
-    if (!shipsPlaced)
-        placeShip();
-}
-*/
-
 int main()
 {
     init();
     Serial.begin(9600);
+    Wire.begin(8);
+
     initMatrix();
     initGame();
     initConnection();
 }
+
+
 
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
 void initGame()
@@ -140,6 +109,58 @@ void initGame()
 
     placeShips();
 }
+
+void initConnection()
+{
+    Serial.println("Waiting for connection from other Arduino.");
+    
+    Wire.requestFrom(8, 6);
+
+
+    while (!Wire.available())
+    {
+        Wire.write("");
+        Serial.print(".");
+        delay(50);
+    }
+
+    Serial.println("Connection establish");
+    Serial.flush();
+}
+
+/**
+ * 
+ * 
+ * 
+ * void setup() {
+  Wire.begin();        // join i2c bus (address optional for master)
+  Serial.begin(9600);  // start serial for output
+}
+
+void loop() {
+  Wire.requestFrom(8, 6);    // request 6 bytes from slave device #8
+
+  while (Wire.available()) { // slave may send less than requested
+    char c = Wire.read(); // receive a byte as character
+    Serial.print(c);         // print the character
+  }
+
+  
+void setup() {
+  Wire.begin(8);                // join i2c bus with address #8
+  Wire.onRequest(requestEvent); // register event
+}
+
+void loop() {
+  delay(100);
+}
+
+// function that executes whenever data is requested by master
+// this function is registered as an event, see setup()
+void requestEvent() {
+  Wire.write("hello "); // respond with message of 6 bytes
+  
+ */
 
 // Initialize the matrix. Might need to be in an object eventually
 void initMatrix()
@@ -249,14 +270,10 @@ void placeShip(int row, int col, bool orientation, int size)
 // @args: size of ship
 void placeShip(int size)
 {
-
     Coords *c = findSpot(size);
     int row = c -> getX();
     int col = c -> getY();
     bool orientation = true;
-    displayShip(row, col, orientation, size);
-    updateFrame();
-
     char action;
 
     while (true)
@@ -302,8 +319,6 @@ void placeShip(int size)
             }
         }
     }
-
-    
     
     Serial.print("Row: ");
     Serial.println(row);
@@ -378,21 +393,3 @@ void addLineTobitmap(int bitmap, int line, byte a, byte b, byte c, byte d, byte 
     bitmaps[bitmap][1][line] = g;
     bitmaps[bitmap][0][line] = h;
 }
-
-int colNum = 0;
-int rowNum = 0;
-
-void initConnection(){
-    if(Serial.available()>0){
-      colNum = Serial.read();
-      Serial.print("Column Number: ");
-      Serial.print(colNum);
-    
-    if(Serial.available()>0){
-      rowNum = Serial.read();
-      Serial.print("Row Number: ");
-      Serial.print(rowNum);
-    } 
-  }
-}
-
