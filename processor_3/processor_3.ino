@@ -54,7 +54,7 @@ int cs = 12;     // pin CS del display
 /*******************/
 /* RGB LED DISPLAY */
 /*******************/
-#define EMPTY 2
+#define EMPTY 2 //2
 #define HIT 100
 #define DESTROY 44
 #define SHIP 8
@@ -129,6 +129,7 @@ int main()
     Serial.begin(9600);
     initMatrix();
     initGame();
+    initConnection();
 }
 
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
@@ -319,7 +320,6 @@ void updateFrame()
     //drawFrame(myShipsDisplay);
 }
 
-// TODO: DEBUG THIS PIECE OF GARBAGE
 void drawFrame(byte frame[8][8])
 {
     digitalWrite(clock, LOW);  //sets the clock for each display, running through 0 then 1
@@ -378,3 +378,21 @@ void addLineTobitmap(int bitmap, int line, byte a, byte b, byte c, byte d, byte 
     bitmaps[bitmap][1][line] = g;
     bitmaps[bitmap][0][line] = h;
 }
+
+int colNum = 0;
+int rowNum = 0;
+
+void initConnection(){
+    if(Serial.available()>0){
+      colNum = Serial.read();
+      Serial.print("Column Number: ");
+      Serial.print(colNum);
+    
+    if(Serial.available()>0){
+      rowNum = Serial.read();
+      Serial.print("Row Number: ");
+      Serial.print(rowNum);
+    } 
+  }
+}
+
