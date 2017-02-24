@@ -115,8 +115,8 @@ void initConnection()
     Serial.println("Waiting for connection from other Arduino.");
     Serial.flush();
     
-    Wire.requestFrom(8, 6);
-    Wire.beginTransmission(8);
+    Wire.requestFrom(1, 6);
+    
 
 //    while (1)
 //    {
@@ -130,16 +130,23 @@ void initConnection()
 //            break;
 //    }
 
-    while (Wire.available())
-    { // slave may send less than requested
-        Wire.write("hello ");
-        char c = Wire.read(); // receive a byte as character
-        Serial.print(c);         // print the character
+    while (1)
+    {
+        while (Wire.available())
+        {   // slave may send less than requested
 
-        delayMicroseconds(Math.random(1, 1000));
+            Wire.beginTransmission(8);
+            Wire.write("hello ");
+            Wire.endTransmission();
+            
+            char c = Wire.read(); // receive a byte as character
+            Serial.print(c);         // print the character
+    
+            delayMicroseconds(random(1, 1000));
+        }
     }
 
-    Wire.endTransmission();
+
     Serial.println("Connection established");
     Serial.flush();
 }
