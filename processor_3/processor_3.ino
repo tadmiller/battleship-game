@@ -117,14 +117,18 @@ void initConnection()
     Wire.requestFrom(8, 6);
 
 
-    while (!Wire.available())
+    while (1)
     {
-        Wire.write("");
+        Wire.write('B');
+        char c = Wire.read();
         Serial.print(".");
         delay(50);
+
+        if (c == 'B')
+            break;
     }
 
-    Serial.println("Connection establish");
+    Serial.println("Connection established");
     Serial.flush();
 }
 
