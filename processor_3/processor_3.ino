@@ -94,8 +94,8 @@ int main()
     Serial.begin(9600);
     Wire.begin(8);
 
-    initMatrix();
-    initGame();
+    //initMatrix();
+    //initGame();
     initConnection();
 }
 
@@ -118,16 +118,25 @@ void initConnection()
     Wire.requestFrom(8, 6);
     Wire.beginTransmission(8);
 
-    while (1)
-    {
-        Wire.write('B');
-        char c = Wire.read();
-        Serial.print(".");
-        Serial.flush();
-        delay(50);
+//    while (1)
+//    {
+//        Wire.write('B');
+//        char c = Wire.read();
+//        Serial.print(".");
+//        Serial.flush();
+//        delay(50);
+//
+//        if (c == 'B')
+//            break;
+//    }
 
-        if (c == 'B')
-            break;
+    while (Wire.available())
+    { // slave may send less than requested
+        Wire.write("hello ");
+        char c = Wire.read(); // receive a byte as character
+        Serial.print(c);         // print the character
+
+        delayMicroseconds(Math.random(1, 1000));
     }
 
     Wire.endTransmission();
