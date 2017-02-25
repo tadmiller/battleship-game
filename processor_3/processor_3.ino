@@ -138,7 +138,8 @@ void initConnection()
             Wire.beginTransmission(8);
             Wire.write("hello ");
             Wire.endTransmission();
-            
+            Serial.println("Reading from other processor");
+            Serial.flush();
             char c = Wire.read(); // receive a byte as character
             Serial.print(c);         // print the character
     
