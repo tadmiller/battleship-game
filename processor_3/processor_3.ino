@@ -124,19 +124,29 @@ void myTurn()
 
     while (status == -1)
     {
-    Wire.beginTransmission(8); // transmit to device #8
-    Wire.write('F');
-    Wire.write(coord -> getX());
-    Wire.write(',');
-    Wire.write(coord -> getY());
-    Wire.endTransmission(); // stop transmitting
-    status = Wire.read();
+        Serial.println("Waiting to see if hit or not...");
+        Wire.beginTransmission(8); // transmit to device #8
+        Wire.write('F');
+        Wire.write(coord -> getX());
+        Wire.write(',');
+        Wire.write(coord -> getY());
+        Wire.endTransmission(); // stop transmitting
+        status = Wire.read();
     }
 
+    Serial.print("Status: ");
+    Serial.println(status);
+
     if (status == 'H')
+    {
+        Serial.println("We hit them!");
         firedPositions[coord -> getX()][coord -> getY()] = HIT;
+    }
     else
+    {
+        Serial.println("No hit!");
         firedPositions[coord -> getX()][coord -> getY()] = NOHIT;
+    }
 
     updateDisplay(firedPositions);
     delay(2000);
@@ -184,16 +194,19 @@ void waitForTurn()
         myShipsDisplay[theirRow][theirCol] = NOHIT;
     else if (myShipsDisplay[theirRow][theirCol] == SHIP)
     {
+        Serial.print("They hit us!");
         myShipsDisplay[theirRow][theirCol] = HIT;
         status = 'H';
     }
+
+    delay(100);
 
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write(status);
     Wire.endTransmission(); // stop transmitting
 
     updateDisplay(myShipsDisplay);
-    delay(2000);
+    delay(2500);
     myTurn();
 }
 
