@@ -24,7 +24,7 @@ byte shipsLoc[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0
 #define SHIP 8
 #define CURSOR 110
 #define NOHIT 0
-#define VERSION 0.14
+#define VERSION 0.15
 
 class Coords
 {
@@ -175,7 +175,7 @@ void myTurn()
 
     delay(10);
     
-    while (status != 'H' && status != 'N')
+    while (status != 'H' && status != 'N' && status != 'D')
     {
         status = Wire.read();
         delay(10);
