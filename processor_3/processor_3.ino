@@ -117,12 +117,16 @@ void receiveEvent(int howMany)
 void myTurn()
 {
     Serial.println("My turn");
+    drawFrame(firedPositions);
     placeDot(1);
+
+    Wire.beginTransmission(8); // transmit to device #8
     Wire.write('F');
     delay(10);
     Wire.write(5);
     delay(10);
     Wire.write(6);
+    Wire.endTransmission();    // stop transmitting
 }
 
 void waitForTurn()
