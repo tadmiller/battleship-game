@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.16 /*
+*/ #define VERSION 0.161 /*
 
  * 
  * 
@@ -87,12 +87,20 @@ class Ship
                     
                     if (myShipsDisplay[cc -> getX()][cc -> getY()] == SHIP)
                         return false;
-                    else if (i == size - 1)
+                    else if (i + 1 == this -> size)
                     {
                         for (int j = 0; j < this -> size; j++)
                         {
-                            Coords *cc = *(c + j);
-                            myShipsDisplay[cc -> getX()][cc -> getY()] = DESTROY;
+                            Coords *ccc = *(c + j);
+                            int row = ccc -> getX();
+                            int col = ccc -> getY();
+
+                            Serial.print("Row: ");
+                            Serial.println(row);
+                            Serial.print("Col: ");
+                            Serial.println(col);
+                            
+                            myShipsDisplay[row][col] = DESTROY;
                         }
                         this -> destroyed = true;
                         return true;
