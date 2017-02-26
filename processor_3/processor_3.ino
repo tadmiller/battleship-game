@@ -204,6 +204,10 @@ void waitForTurn()
 
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write(status);
+    delay(10);
+    Wire.write(status);
+    delay(10);
+    Wire.write(status);
     Wire.endTransmission(); // stop transmitting
 
     updateDisplay(myShipsDisplay);
