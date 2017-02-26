@@ -193,7 +193,7 @@ void myTurn()
     {
         Serial.println("We've sunk their battleship!");
         shipsDestroyed++;
-        firedPositions[cords -> getX()][coord -> getY()] = DESTROY;
+        firedPositions[coord -> getX()][coord -> getY()] = DESTROY;
     }
     else
     {
