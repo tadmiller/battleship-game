@@ -186,36 +186,31 @@ Coords *recieveCoords()
     int col = -1;
     int bitsRecieved = 0;
     Serial.println("RECIEVING COORDS");
+    int x = -1;
 
-    while (bitsRecieved < 4)
+    while (x != 'X')
     {
-        while (Wire.available())
-        {
-            int s = Wire.read();
-            Serial.print(s);
-            Serial.print(' ');
-            
-            if (s != 255 && s > 0)
-                bitsRecieved++;
-        }
-
-        delay(100);
+        x = Wire.read();
+        row = Wire.read();
     }
 
-    Wire.requestFrom(8, 1);
+    Serial.print((char)x);
+    Serial.println(row);
 
     return new Coords(2, 2);
 }
 
 void transmitCoords(int x, int y)
 {   
-    Wire.beginTransmission(8);
-
-    while (!requested)
+    do
     {
-        delay(100);
-        Serial.println("Waiting for request...");
+        Wire.beginTransmission(8);
+        Wire.write('X');
+        Wire.write(x);
+        Wire.endTransmission();
+        delay(50);
     }
+    while (Wire.read() != 'R');
 
 
     delay(100);
