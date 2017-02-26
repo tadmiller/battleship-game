@@ -119,8 +119,11 @@ void initGame()
     placeShips();
 }
 
+byte a = 0;
+
 void initConnection()
 {
+    Serial.println("Establishing connection...");
     while (1)
     {
         while (1 < Wire.available())
