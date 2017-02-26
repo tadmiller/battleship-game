@@ -59,7 +59,7 @@ int cs = 12;     // pin CS del display
 #define DESTROY 64
 #define SHIP 8
 #define CURSOR 110
-#define NOHIT 0
+#define NOHIT 1
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -118,7 +118,7 @@ void receiveEvent(int howMany)
 void myTurn()
 {
     Serial.println("My turn");
-    drawFrame(firedPositions);
+    updateDisplay(firedPositions);
     Coords *coord = placeDot(1);
 
     Wire.beginTransmission(8); // transmit to device #8
@@ -138,14 +138,14 @@ void myTurn()
     else
         firedPositions[coord -> getX()][coord -> getY()] = NOHIT;
 
-    drawFrame(firedPositions);
+    updateDisplay(firedPositions);
     delay(2000);
     waitForTurn();
 }
 
 void waitForTurn()
 {
-    drawFrame(myShipsDisplay);
+    updateDisplay(myShipsDisplay);
 
     Serial.println("Waiting for other player to fire...");
 
@@ -190,7 +190,7 @@ void waitForTurn()
 
     Wire.write(status);
 
-    drawFrame(myShipsDisplay);
+    updateDisplay(myShipsDisplay);
 
     delay(2000);
     myTurn();
@@ -307,7 +307,7 @@ void initMatrix()
     pinMode(data, OUTPUT); 
     pinMode(cs, OUTPUT); 
 
-    drawFrame(tmpDisplay);
+    updateDisplay(tmpDisplay);
 }
 
 // Get an input from the keypad
@@ -434,7 +434,7 @@ Coords *placeDot(int size)
     {
         cpyTmpDisplay();
         displayDots(row, col, orientation, size);
-        drawFrame(tmpDisplay);
+        updateDisplay(tmpDisplay);
 
         action = findInput();
         
@@ -482,6 +482,13 @@ Coords *placeDot(int size)
     Serial.flush();
 
     return new Coords(row, col);
+}
+
+void updateDisplay(byte frame[8][8])
+{
+    drawFrame(frame[8][8]);
+    delay(20);
+    drawFrame(frame[8][8]);
 }
 
 void drawFrame(byte frame[8][8])
