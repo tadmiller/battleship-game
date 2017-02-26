@@ -33,6 +33,8 @@ class Coords
         int y;
 
     public:
+        Coords() {}
+    
         Coords(int x, int y)
         {
             this -> x = x;
@@ -53,14 +55,14 @@ class Coords
 class Ship
 {
     private:
-        Coords **c;
+        Coords *c;
         int size;
         int shipNum;
         bool destroyed;
 
     public:
         Ship() {}
-        Ship(int x, int y, int size, int shipNum, Coords *c[])
+        Ship(int x, int y, int size, int shipNum, Coords c[])
         {
             this -> destroyed = false;
             this -> c = c;
@@ -79,21 +81,21 @@ class Ship
                 return true;
             else
             {
-                Coords **c = this -> getCoords();
+                Coords *c = this -> getCoords();
 
                 for (int i = 0; i < this -> size; i++)
                 {
-                    Coords *cc = *(c + i);
+                    Coords cc = c[i];
                     
-                    if (myShipsDisplay[cc -> getX()][cc -> getY()] == SHIP)
+                    if (myShipsDisplay[cc.getX()][cc.getY()] == SHIP)
                         return false;
                     else if (i + 1 == this -> size)
                     {
                         for (int j = 0; j < this -> size; j++)
                         {
-                            Coords *ccc = *(c + j);
-                            int row = ccc -> getX();
-                            int col = ccc -> getY();
+                            Coords ccc = c[i];
+                            int row = ccc.getX();
+                            int col = ccc.getY();
 
                             Serial.print("Row: ");
                             Serial.println(row);
@@ -111,7 +113,7 @@ class Ship
             }
         }
 
-        Coords **getCoords()
+        Coords *getCoords()
         {
             return c;
         }
@@ -398,12 +400,12 @@ void placeShips()
         for (int i = 0; i < 3; i++)
         {
             Ship *s = ships + shipNum - 1;
-            Coords **c = s -> getCoords();
-            Coords *cc = *(c + i);
+            Coords *c = s -> getCoords();
+            Coords cc = c[i];
             Serial.print("Row: ");
-            Serial.println(cc -> getX());
+            Serial.println(cc.getX());
             Serial.print("Col: ");
-            Serial.println(cc -> getY());
+            Serial.println(cc.getY());
         }
 
                     
@@ -479,21 +481,21 @@ void placeDot(int row, int col, bool orientation, int size)
 {
     if (!shipsPlaced)
     {
-        Coords *c[size];
+        Coords *c = new Coords[size];
         
         if (orientation)
             for (int i = 0; i < size; i++)
             {
                 myShipsDisplay[row][col + i] = SHIP;
                 shipsLoc[row][col + i] = shipNum;
-                *(c + i) = new Coords(row, col + i);
+                c[i] = Coords(row, col + i);
             }
         else
             for (int i = 0; i < size; i++)
             {
                 myShipsDisplay[row + i][col] = SHIP;
                 shipsLoc[row + i][col] = shipNum;
-                *(c + i) = new Coords(row + i, col);
+                c[i] = Coords(row + i, col);
             }
             
         ships[shipNum] = Ship(row, col, size, shipNum, c);
@@ -503,14 +505,13 @@ void placeDot(int row, int col, bool orientation, int size)
 
         for (int i = 0; i < 2; i++)
         {
-            Serial.println("Ship 0");
-            Ship s = ships[0];
-            Coords **c = s.getCoords();
-            Coords *cc = *(c + i);
+            Ship s = ships[shipNum - 1];
+            Coords *c = s.getCoords();
+            Coords cc = c[i];
             Serial.print("Row: ");
-            Serial.println(cc -> getX());
+            Serial.println(cc.getX());
             Serial.print("Col: ");
-            Serial.println(cc -> getY());
+            Serial.println(cc.getY());
         }
     }
     else
