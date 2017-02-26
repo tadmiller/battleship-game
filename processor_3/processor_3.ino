@@ -184,7 +184,7 @@ Coords *recieveCoords()
 {
     int row = -1;
     int col = -1;
-    int bitsRecieved = 0;
+    byte i = 0;
     Serial.println("RECIEVING COORDS");
     int x = -1;
     int y = -1;
@@ -215,13 +215,16 @@ Coords *recieveCoords()
         Serial.println(col);
     }
 
+    delay(100);
+
     do
     {
         Wire.beginTransmission(8);
         Wire.write('Y');
         Wire.endTransmission();
+        delay(5);
     }
-    while (Wire.read() != -1);
+    while (Wire.read() != -1 || ++i < 10);
 
     Serial.print(x);
     Serial.println(row);
@@ -493,7 +496,7 @@ Coords *findSpot(int size)
         c = new Coords(t_rand(1, 8), t_rand(1, 8));
         a++;
 
-        if (a > 50)
+        if (a > 10)
             return new Coords(3, 3);
     }
 
