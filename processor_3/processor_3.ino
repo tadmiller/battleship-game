@@ -171,6 +171,7 @@ void receiveEvent(int howMany)
 
 void requestEvent(int howMany)
 {
+    Serial.println("Bytes have been requested!");
     requested = true;
 }
 
@@ -274,14 +275,7 @@ void waitForTurn()
     updateDisplay(myShipsDisplay);
 
     Serial.println("Waiting for other player to fire...");
-    char status = 'A';
-
-    while (status != 'F')
-    {
-        Serial.println(status);
-        status = Wire.read();
-        delay(10);
-    }
+    char status = 'F';
 
     Coords *c = recieveCoords();
 
