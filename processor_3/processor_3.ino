@@ -90,7 +90,7 @@ void receiveEvent(int howMany)
 
 int t_rand(int x, int y)
 {
-    return (((int) millis()) * random(x, y) * 1000) % (y + 1);
+    return (((int) millis()) * random(x, y) * 1000 * analogRead(1)) % (y + 1);
 }
 
 void myTurn()
