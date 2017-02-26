@@ -187,21 +187,38 @@ Coords *recieveCoords()
     int bitsRecieved = 0;
     Serial.println("RECIEVING COORDS");
     int x = -1;
+    int y = -1;
 
     while (x != 'X' && row < 0)
     {
         x = Wire.read();
         row = Wire.read();
     }
-    
-    Wire.beginTransmission(8);
-    Wire.write('R');
-    Wire.endTransmission();
+
+    while (y != 'Y' && col < 0)
+    {
+        Wire.beginTransmission(8);
+        Wire.write('X');
+        Wire.endTransmission();
+
+        y = Wire.read();
+        col = Wire.read();
+    }
+
+    while (Wire.read() != -1)
+    {
+        Wire.beginTransmission(8);
+        Wire.write('Y');
+        Wire.endTransmission();
+    }
 
     Serial.print((char)x);
     Serial.println(row);
 
-    return new Coords(2, 2);
+    Serial.print((char)y);
+    Serial.println(col);
+
+    return new Coords(row, col);
 }
 
 void transmitCoords(int x, int y)
@@ -213,12 +230,18 @@ void transmitCoords(int x, int y)
         Wire.write(x);
         Wire.endTransmission();
     }
-    while (Wire.read() != 'R');
+    while (Wire.read() != 'X');
 
     Serial.println("Sent X coords");
 
-
-    delay(100);
+    do
+    {
+        Wire.beginTransmission(8);
+        Wire.write('Y');
+        Wire.write(y);
+        Wire.endTransmission();
+    }
+    while (Wire.read() != 'Y');
 }
 
 void myTurn()
