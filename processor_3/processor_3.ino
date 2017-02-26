@@ -115,6 +115,7 @@ void receiveEvent(int howMany)
 void determineFirst()
 {
     Serial.println("Determining player to go first...");
+    Serial.flush();
     int myNum = random(1, 100);
     int opNum = -1;
 
@@ -126,6 +127,7 @@ void determineFirst()
 
     Serial.print("Op number is: ");
     Serial.println(opNum);
+    Serial.flush();
 }
 
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
@@ -142,7 +144,7 @@ void initConnection()
 {
     Serial.println("Establishing connection...");
 
-    while (Wire.read() != 'R')
+    do
     {
         delay(random(1, 100));
     
@@ -150,9 +152,12 @@ void initConnection()
         Wire.write('R');        // sends five bytes
         Wire.endTransmission();    // stop transmitting
     }
+    while (Wire.read() != 'R');
 
     Serial.println("Connection established");
     Serial.flush();
+
+    delay(500);
 }
 
 /**
