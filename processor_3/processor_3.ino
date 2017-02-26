@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.171 /*
+*/ #define VERSION 0.18 /*
 
  * 
  * 
@@ -295,13 +295,13 @@ void waitForTurn()
     updateDisplay(myShipsDisplay);
 
     Serial.println("Waiting for other player to fire...");
-
     int transmission = -1;
 
     while (transmission != 'F')
     {
+        Serial.println(transmission);
         transmission = Wire.read();
-        delay(5);
+        delay(1);
     }
 
     Coords *c = recieveCoords();
