@@ -1,5 +1,5 @@
 /**
- * @version 0.11
+
  * 
  * 
  */
@@ -24,7 +24,6 @@ byte shipsLoc[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0
 #define SHIP 8
 #define CURSOR 110
 #define NOHIT 0
-#define VERSION 0.15
 
 class Coords
 {
@@ -204,7 +203,7 @@ void myTurn()
     updateDisplay(firedPositions);
     delay(2500);
 
-    if (status == 'H')
+    if (status == 'H' || status == 'D')
         myTurn();
     
     waitForTurn();
