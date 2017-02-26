@@ -189,9 +189,10 @@ Coords *recieveCoords()
     int x = -1;
     int y = -1;
 
-    while (x != 'X' && row < 0)
+    while (x != 'X' && (row < 0 || row > 8))
     {
         x = Wire.read();
+        delay(10);
         row = Wire.read();
 
         if (row == 'X' && (x > 0 && x < 8))
@@ -201,13 +202,14 @@ Coords *recieveCoords()
         }
     }
 
-    while (y != 'Y' && col < 0)
+    while (y != 'Y' && (col < 0 || col > 8))
     {
         Wire.beginTransmission(8);
         Wire.write('X');
         Wire.endTransmission();
 
         y = Wire.read();
+        delay(10);
         col = Wire.read();
 
         if (col == 'Y' && (y > 0 && y < 8))
@@ -239,6 +241,7 @@ void transmitCoords(int x, int y)
     {
         Wire.beginTransmission(8);
         Wire.write('X');
+        delay(10);
         Wire.write(x);
         Wire.endTransmission();
     }
@@ -250,6 +253,7 @@ void transmitCoords(int x, int y)
     {
         Wire.beginTransmission(8);
         Wire.write('Y');
+        delay(10);
         Wire.write(y);
         Wire.endTransmission();
     }
