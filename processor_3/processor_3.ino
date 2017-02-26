@@ -222,7 +222,12 @@ void transmitCoords(int x, int y, char status)
     Wire.beginTransmission(8);
 
     while (Wire.read() != 'X')
+    {
+        Serial.print("SENT ");
+        Serial.println(status);
         Wire.write(status);
+        delay(10);
+    }
     Serial.println("Sent STATUS");
 
     while (Wire.read() != ',')
@@ -301,7 +306,7 @@ void waitForTurn()
     {
         Serial.println(transmission);
         transmission = Wire.read();
-        delay(1);
+        delay(10);
     }
 
     Coords *c = recieveCoords();
