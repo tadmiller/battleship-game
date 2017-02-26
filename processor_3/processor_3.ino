@@ -140,6 +140,10 @@ byte shipsDestroyed = 0;
 byte shipNum = 0;
 /******************/
 
+/*****TRANSMISSION*****/
+bool requested = false;
+bool recieved = false;
+
 void setup()
 {
     init();
@@ -147,6 +151,7 @@ void setup()
     randomSeed(analogRead(0));
     Wire.begin(8);
     Wire.onReceive(receiveEvent);
+    Wire.onRequest(requestEvent);
 
     initMatrix();
     initGame();
@@ -161,7 +166,12 @@ void loop()
 
 void receiveEvent(int howMany)
 {
+    recieved = true;
+}
 
+void requestEvent(int howMany)
+{
+    requested = true;
 }
 
 int t_rand(int x, int y)
@@ -171,80 +181,44 @@ int t_rand(int x, int y)
 
 Coords *recieveCoords()
 {
+    Wire.requestFrom(8, 5);
     int row = -1;
-    int inBetween = -1;
     int col = -1;
+    int bitsRecieved = 0;
+    Serial.println("RECIEVING COORDS");
 
-    Wire.beginTransmission(8);
-
-    do
+    while (bitsRecieved < 4)
     {
-        Wire.write('X');
-        row = Wire.read();
+        while (Wire.available())
+        {
+            Serial.print(Wire.read());
+            bitsRecieved++;
+        }
+
+        delay(100);
     }
-    while (row < 0 && row > 8);
-    Serial.println("Recieved X");
 
-    do
-    {
-        Wire.write(',');
-    }
-    while (Wire.read() != ',');
-    Serial.println("Recieved ,");
+    Wire.requestFrom(8, 1);
 
-    do
-    {
-        Wire.write('Y');
-        col = Wire.read();
-    }
-    while (col < 0 && col > 8);
-    Serial.println("Recieved Y");
-
-    for (int i = 0; i < 10; i++)
-    {
-        Wire.write('C');
-    }
-    Serial.println("Done");
-
-    Wire.endTransmission();
-
-    Serial.print("(");
-    Serial.print(row);
-    Serial.print(", ");
-    Serial.print(col);
-    Serial.println(")");
-
-    return new Coords(row, col);
+    return new Coords(2, 2);
 }
 
 void transmitCoords(int x, int y, char status)
 {   
     Wire.beginTransmission(8);
+    String s = String(status) + String(x) + ',' + String(y);
 
-    while (Wire.read() != 'X')
-    {
-        Serial.print("SENT ");
-        Serial.println(status);
-        Wire.write(status);
+    while (!requested)
         delay(100);
-    }
-    Serial.println("Sent STATUS");
 
-    while (Wire.read() != ',')
-        Wire.write(x);
-    Serial.println("Sent X");
-    
-    while (Wire.read() != 'Y')
-        Wire.write(',');
-Serial.println("Sent ,");
+    requested = false;
+    Serial.print("Sending: ");
+    Serial.println(s);
+    while (!requested)
+        Wire.write(s.c_str());
 
-    while (Wire.read() != 'C')
-        Wire.write(y);
-    Serial.println("Sent Y");
-
+    requested = false;
     delay(100);
-
-    Wire.endTransmission(); // stop transmitting
 }
 
 void myTurn()
