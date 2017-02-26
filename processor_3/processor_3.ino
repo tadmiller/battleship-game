@@ -83,6 +83,7 @@ unsigned long lastTime;     // display refresh time
 /******************/
 bool shipsPlaced = false;
 bool waitingOnOpponent = false;
+bool isMyTurn = false;
 
 byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 byte tmpShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
@@ -98,6 +99,7 @@ void setup()
     initMatrix();
     initGame();
     initConnection();
+    determineFirst();
 }
 
 void loop()
@@ -110,6 +112,22 @@ void receiveEvent(int howMany)
 
 }
 
+void determineFirst()
+{
+    Serial.println("Determining player to go first...");
+    int myNum = random(1, 100);
+    int opNum = -1;
+
+    while (opNum == -1)
+        opNum = Wire.read();
+
+    Serial.print("My number is: ");
+    Serial.println(myNum);
+
+    Serial.print("Op number is: ");
+    Serial.println(opNum);
+}
+
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
 void initGame()
 {
@@ -119,28 +137,18 @@ void initGame()
     placeShips();
 }
 
-byte a = 0;
-
+// R = Ready
 void initConnection()
 {
     Serial.println("Establishing connection...");
-    while (1)
+
+    while (Wire.read() != 'R')
     {
-        while (1 < Wire.available())
-        { // loop through all but the last
-          char c = Wire.read(); // receive byte as a character
-          Serial.print(c);         // print the character
-        }
-        int x = Wire.read();    // receive byte as an integer
-        Serial.println(x);         // print the integer
         delay(random(1, 100));
     
         Wire.beginTransmission(8); // transmit to device #8
-        Wire.write("x is ");        // sends five bytes
-        Wire.write(a);              // sends one byte
+        Wire.write('R');        // sends five bytes
         Wire.endTransmission();    // stop transmitting
-    
-        a++;
     }
 
     Serial.println("Connection established");
