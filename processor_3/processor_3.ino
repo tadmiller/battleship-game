@@ -182,7 +182,6 @@ int t_rand(int x, int y)
 
 Coords *recieveCoords()
 {
-    Wire.requestFrom(8, 5);
     int row = -1;
     int col = -1;
     int bitsRecieved = 0;
@@ -208,10 +207,9 @@ Coords *recieveCoords()
     return new Coords(2, 2);
 }
 
-void transmitCoords(int x, int y, char status)
+void transmitCoords(int x, int y)
 {   
     Wire.beginTransmission(8);
-    String s = String(status) + String(x) + ',' + String(y);
 
     while (!requested)
     {
@@ -236,8 +234,14 @@ void myTurn()
     Coords *coord = placeDot(1);
     char status = 'A';
 
-    Serial.println("Waiting to see if hit or not...");
-    transmitCoords(coord -> getX(), coord -> getY(), 'F');
+    Wire.beginTransmission(8);
+    Wire.write('F');
+    delay(15);
+    Wire.write('F');
+    Wire.endTransmission();
+    
+    Serial.println("Transmitting coordinates!");
+    transmitCoords(coord -> getX(), coord -> getY());
     
     while (status != 'H' && status != 'N' && status != 'D')
     {
@@ -282,7 +286,12 @@ void waitForTurn()
     updateDisplay(myShipsDisplay);
 
     Serial.println("Waiting for other player to fire...");
-    char status = 'F';
+    char status = 'A';
+
+    while (Wire.read() != 'F')
+        delay(10);
+
+    Serial.println("They are firing!");
 
     Coords *c = recieveCoords();
 
