@@ -188,11 +188,16 @@ Coords *recieveCoords()
     Serial.println("RECIEVING COORDS");
     int x = -1;
 
-    while (x != 'X')
+    do
     {
         x = Wire.read();
         row = Wire.read();
     }
+    while (x != 'X' && row > 0);
+    
+    Wire.beginTransmission(8);
+    Wire.write('R');
+    Wire.endTransmission();
 
     Serial.print((char)x);
     Serial.println(row);
@@ -208,9 +213,10 @@ void transmitCoords(int x, int y)
         Wire.write('X');
         Wire.write(x);
         Wire.endTransmission();
-        delay(50);
     }
     while (Wire.read() != 'R');
+
+    Serial.println("Sent X coords");
 
 
     delay(100);
