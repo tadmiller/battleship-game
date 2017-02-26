@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.20 /*
+*/ #define VERSION 0.21 /*
 
  * 
  * 
@@ -200,7 +200,10 @@ Coords *recieveCoords()
         Serial.println(row);
 
         if (row == 88 && x > 0 && x < 8)
+        {
             row = x;
+            break;
+        }
     }
 
     while (y != 'Y' && (col < 0 || col > 8))
@@ -218,7 +221,10 @@ Coords *recieveCoords()
         Serial.println(col);
 
         if (col == 89 && y > 0 && y < 8)
+        {
             col = y;
+            break;
+        }
     }
 
     do
