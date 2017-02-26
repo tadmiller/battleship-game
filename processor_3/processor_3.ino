@@ -192,11 +192,11 @@ Coords *recieveCoords()
     {
         while (Wire.available())
         {
-            char s = Wire.read();
+            int s = Wire.read();
             Serial.print(s);
             Serial.print(' ');
             
-            if (s != 255 && s != 0)
+            if (s != 255 && s > 0)
                 bitsRecieved++;
         }
 
