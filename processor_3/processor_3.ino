@@ -486,9 +486,9 @@ Coords *placeDot(int size)
 
 void updateDisplay(byte frame[8][8])
 {
-    drawFrame(frame[8][8]);
+    drawFrame(frame);
     delay(20);
-    drawFrame(frame[8][8]);
+    drawFrame(frame);
 }
 
 void drawFrame(byte frame[8][8])
