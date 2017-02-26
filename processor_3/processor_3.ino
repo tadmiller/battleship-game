@@ -5,10 +5,7 @@
  */
 
 #include <Keypad.h>
-#include <Arduino.h>
 #include <Wire.h>
-#include <SPI.h>
-#include <EEPROM.h>
 
 class Coords
 {
@@ -34,8 +31,6 @@ class Coords
         }
 };
 
-//
-
 /*******************/
 /* KEYPAD CODE     */
 /*******************/
@@ -44,16 +39,9 @@ byte rowPins[4] = {8, 7, 6, 5}; //connect to the row pinouts of the keypad
 byte colPins[3] = {4, 3, 2}; //connect to the column pinouts of the keypad
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, 4, 3);
 
-// RGB 8x8 PROCESSOR CODE
-int bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
-
-int clock = 11;  // pin SCK del display
-int data = 13;   // pin DI del display
-int cs = 12;     // pin CS del display
-
-/*******************/
-/* RGB LED DISPLAY */
-/*******************/
+/************************/
+/* RGB LED DISPLAY VARS */
+/************************/
 #define EMPTY 2 //2
 #define HIT 100
 #define DESTROY 64
@@ -61,42 +49,26 @@ int cs = 12;     // pin CS del display
 #define CURSOR 110
 #define NOHIT 0
 #define VERSION 0.14
-byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
-byte displayPicture[8][8];  // What is currently ON display.
 
-//Ship myShip(3, 3);
-
-////////////////
-int currentBitmap = 0;      // current displayed bitmap, per display
-int targetBitmap = 0;       // Desired image, for the animation to strive for, per display
-int step;                   // animation step, usually from 0 to 8, per screen
-int stepDelay = 19;         // the wait time between each animation frame
-//////////////////////////
-
-//////////////////////////////
-unsigned int delayCounter;           // holder for the delay, as to not hog to processor, per screen
-int animationStyle = 0;     // different types of animation 0 = slide 1 = frame replace
-unsigned long lastTime;     // display refresh time
-//////////////////////////////
-/*******************/
-
-
+int bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
+int clock = 11;  // pin SCK del display
+int data = 13;   // pin DI del display
+int cs = 12;     // pin CS del display
 /******************/
 /* GAME MECHANICS */
 /******************/
 bool shipsPlaced = false;
-bool waitingOnOpponent = false;
-bool isMyTurn = false;
-
 byte firedPositions[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 byte tmpDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+byte shipsDestroyed = 0;
 /******************/
 
 void setup()
 {
     init();
     Serial.begin(9600);
+    randomSeed(analogRead(0));
     Wire.begin(8);
     Wire.onReceive(receiveEvent);
 
@@ -116,6 +88,11 @@ void receiveEvent(int howMany)
 
 }
 
+int t_rand(int x, int y)
+{
+    return (((int) millis()) * random(x, y) * 1000) % (y + 1);
+}
+
 void myTurn()
 {
     Serial.println("My turn");
@@ -123,13 +100,13 @@ void myTurn()
     Coords *coord = placeDot(1);
     int status = -1;
 
-        Serial.println("Waiting to see if hit or not...");
-        Wire.beginTransmission(8); // transmit to device #8
-        Wire.write('F');
-        Wire.write(coord -> getX());
-        Wire.write(',');
-        Wire.write(coord -> getY());
-        Wire.endTransmission(); // stop transmitting
+    Serial.println("Waiting to see if hit or not...");
+    Wire.beginTransmission(8); // transmit to device #8
+    Wire.write('F');
+    Wire.write(coord -> getX());
+    Wire.write(',');
+    Wire.write(coord -> getY());
+    Wire.endTransmission(); // stop transmitting
 
     delay(10);
     
@@ -221,7 +198,7 @@ void determineFirst()
 {
     Serial.println("Determining player to go first...");
     Serial.flush();
-    int myNum = random(1, 80);
+    int myNum = t_rand(1, 80);
     int opNum = -1;
 
     do
@@ -232,7 +209,7 @@ void determineFirst()
         Wire.write(myNum);        // sends five bytes
         Wire.endTransmission();    // stop transmitting
         
-        delay(random(1, 100));
+        delay(t_rand(1, 100));
     }
     while (opNum == -1 || opNum == 82);
 
@@ -275,7 +252,7 @@ void initConnection()
 
     do
     {
-        delay(random(1, 100));
+        delay(t_rand(1, 100));
     
         Wire.beginTransmission(8); // transmit to device #8
         Wire.write('R');        // sends five bytes
@@ -288,40 +265,6 @@ void initConnection()
 
     delay(500);
 }
-
-/**
- * 
- * 
- * 
- * void setup() {
-  Wire.begin();        // join i2c bus (address optional for master)
-  Serial.begin(9600);  // start serial for output
-}
-
-void loop() {
-  Wire.requestFrom(8, 6);    // request 6 bytes from slave device #8
-
-  while (Wire.available()) { // slave may send less than requested
-    char c = Wire.read(); // receive a byte as character
-    Serial.print(c);         // print the character
-  }
-
-  
-void setup() {
-  Wire.begin(8);                // join i2c bus with address #8
-  Wire.onRequest(requestEvent); // register event
-}
-
-void loop() {
-  delay(100);
-}
-
-// function that executes whenever data is requested by master
-// this function is registered as an event, see setup()
-void requestEvent() {
-  Wire.write("hello "); // respond with message of 6 bytes
-  
- */
 
 // Initialize the matrix. Might need to be in an object eventually
 void initMatrix()
@@ -367,10 +310,10 @@ void placeShips()
 
 Coords *findSpot(int size)
 {
-    Coords *c = new Coords(random(1, 8), random(1, 8));
+    Coords *c = new Coords(t_rand(1, 8), t_rand(1, 8));
 
     while (!isValidSpots(c -> getX(), c -> getY(), true, size))
-        c = new Coords(random(1, 8), random(1, 8));
+        c = new Coords(t_rand(1, 8), t_rand(1, 8));
 
     return c;
 }
@@ -442,7 +385,6 @@ void placeDot(int row, int col, bool orientation, int size)
 }
 
 // Place one ship
-// KNOWN BUGS: Can't place in spot 0x0
 // TODO: Add function that finds valid spot for ship of length int size
 // @args: size of ship
 Coords *placeDot(int size)
@@ -552,23 +494,4 @@ void writeByte(byte myByte)
         delayMicroseconds(10);
         digitalWrite(clock, LOW); 
     }
-}
-
-void setBitmap(int bitmap)
-{
-    for(int x = 0; x < 8; x++)
-        for (int y = 0; y < 8; y++) //copies the bitmap to be displayed ( in memory )
-            displayPicture[x][y] = bitmaps[bitmap][x][y];
-}
-
-void addLineTobitmap(int bitmap, int line, byte a, byte b, byte c, byte d, byte e, byte f, byte g, byte h)
-{
-    bitmaps[bitmap][7][line] = a;
-    bitmaps[bitmap][6][line] = b;
-    bitmaps[bitmap][5][line] = c;
-    bitmaps[bitmap][4][line] = d;
-    bitmaps[bitmap][3][line] = e;
-    bitmaps[bitmap][2][line] = f;
-    bitmaps[bitmap][1][line] = g;
-    bitmaps[bitmap][0][line] = h;
 }
