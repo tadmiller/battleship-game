@@ -180,31 +180,31 @@ Coords *recieveCoords()
     do
     {
         Wire.write('X');
-        delay(100);
         row = Wire.read();
     }
     while (row < 0 && row > 8);
+    Serial.println("Recieved X");
 
     do
     {
         Wire.write(',');
-        delay(100);
     }
     while (Wire.read() != ',');
+    Serial.println("Recieved ,");
 
     do
     {
         Wire.write('Y');
-        delay(100);
         col = Wire.read();
     }
     while (col < 0 && col > 8);
+    Serial.println("Recieved Y");
 
     for (int i = 0; i < 10; i++)
     {
         Wire.write('C');
-        delay(10);
     }
+    Serial.println("Done");
 
     Wire.endTransmission();
 
@@ -223,15 +223,19 @@ void transmitCoords(int x, int y, char status)
 
     while (Wire.read() != 'X')
         Wire.write(status);
+    Serial.println("Sent STATUS");
 
     while (Wire.read() != ',')
         Wire.write(x);
+    Serial.println("Sent X");
     
     while (Wire.read() != 'Y')
         Wire.write(',');
+Serial.println("Sent ,");
 
     while (Wire.read() != 'C')
         Wire.write(y);
+    Serial.println("Sent Y");
 
     delay(100);
 
