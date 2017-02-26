@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.17 /*
+*/ #define VERSION 0.171 /*
 
  * 
  * 
@@ -93,7 +93,7 @@ class Ship
                     {
                         for (int j = 0; j < this -> size; j++)
                         {
-                            Coords ccc = c[i];
+                            Coords ccc = c[j];
                             int row = ccc.getX();
                             int col = ccc.getY();
 
