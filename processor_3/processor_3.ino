@@ -192,22 +192,14 @@ Coords *recieveCoords()
     while (x != 'X' && (row < 0 || row > 8))
     {
         x = Wire.read();
-        delay(10);
+        delay(5);
         row = Wire.read();
 
         Serial.print(x);
         Serial.print(":");
         Serial.println(row);
-
-        if (row == 88 && x > 0 && x < 8)
-        {
-            row = x;
-            break;
-        }
     }
-
-    delay(100);
-
+    
     while (y != 'Y' && (col < 0 || col > 8))
     {
         Wire.beginTransmission(8);
@@ -215,7 +207,7 @@ Coords *recieveCoords()
         Wire.endTransmission();
 
         y = Wire.read();
-        delay(10);
+        delay(5);
         col = Wire.read();
 
         Serial.print(y);
