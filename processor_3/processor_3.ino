@@ -480,7 +480,7 @@ Coords *findSpot(int size)
     Coords *c = new Coords(t_rand(1, 8), t_rand(1, 8));
 
     while (!isValidSpots(c -> getX(), c -> getY(), true, size))
-        c = new Coords(t_rand(1, 8), t_rand(1, 8));
+        c = new Coords(3, 3); // t_rand(1, 8), t_rand(1, 8)
 
     return c;
 }
