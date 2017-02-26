@@ -226,7 +226,7 @@ void transmitCoords(int x, int y, char status)
         Serial.print("SENT ");
         Serial.println(status);
         Wire.write(status);
-        delay(10);
+        delay(100);
     }
     Serial.println("Sent STATUS");
 
@@ -300,12 +300,12 @@ void waitForTurn()
     updateDisplay(myShipsDisplay);
 
     Serial.println("Waiting for other player to fire...");
-    int transmission = -1;
+    char status = 'A';
 
-    while (transmission != 'F')
+    while (status != 'F')
     {
-        Serial.println(transmission);
-        transmission = Wire.read();
+        Serial.println(status);
+        status = Wire.read();
         delay(10);
     }
 
