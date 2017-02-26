@@ -134,10 +134,11 @@ void myTurn()
         status = Wire.read();
 
     if (status == 'H')
-        firedPositions[row][col] = HIT;
+        firedPositions[coord -> getX()][coord -> getY()] = HIT;
     else
-        firedPositions[row][col] = NOHIT;
+        firedPositions[coord -> getX()][coord -> getY()] = NOHIT;
 
+    drawFrame(firedPositions);
     delay(2000);
     waitForTurn();
 }
@@ -179,11 +180,11 @@ void waitForTurn()
     // transmit back whether we hit H, destroyed D, or did not hit N
     char status = 'N';
 
-    if (myShipsDisplay[row][col] == EMPTY)
-        myShipsDisplay[row][col] = NOHIT;
-    else if (myShipsDisplay[row][col] == SHIP)
+    if (myShipsDisplay[theirRow][theirCol] == EMPTY)
+        myShipsDisplay[theirRow][theirCol] = NOHIT;
+    else if (myShipsDisplay[theirRow][theirCol] == SHIP)
     {
-        myShipsDisplay[row][col] = HIT;
+        myShipsDisplay[theirRow][theirCol] = HIT;
         status = 'H';
     }
 
