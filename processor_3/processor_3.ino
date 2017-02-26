@@ -131,7 +131,11 @@ void myTurn()
     }
 
     updateDisplay(firedPositions);
-    delay(2000);
+    delay(2500);
+
+    if (status == 'H')
+        myTurn();
+    
     waitForTurn();
 }
 
@@ -191,6 +195,9 @@ void waitForTurn()
 
     updateDisplay(myShipsDisplay);
     delay(2500);
+
+    if (status == 'H')
+        waitForTurn();
     myTurn();
 }
 
