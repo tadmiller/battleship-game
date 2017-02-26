@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.19 /*
+*/ #define VERSION 0.20 /*
 
  * 
  * 
@@ -193,6 +193,12 @@ Coords *recieveCoords()
     {
         x = Wire.read();
         row = Wire.read();
+
+        if (row == 'X' && (x > 0 && x < 8))
+        {
+            row = x;
+            break;
+        }
     }
 
     while (y != 'Y' && col < 0)
@@ -203,6 +209,12 @@ Coords *recieveCoords()
 
         y = Wire.read();
         col = Wire.read();
+
+        if (col == 'Y' && (y > 0 && y < 8))
+        {
+            col = y;
+            break;
+        }
     }
 
     while (Wire.read() != -1)
