@@ -118,6 +118,11 @@ void myTurn()
 {
     Serial.println("My turn");
     placeDot(1);
+    Wire.write('F');
+    delay(10);
+    Wire.write(5);
+    delay(10);
+    Wire.write(6);
 }
 
 void waitForTurn()
