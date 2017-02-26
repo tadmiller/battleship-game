@@ -175,49 +175,56 @@ Coords *recieveCoords()
     int inBetween = -1;
     int col = -1;
 
+    Wire.beginTransmission(8);
+
     do
     {
         row = Wire.read();
+        Wire.write('X');
         delay(10);
     }
     while (row < 0 && row > 8);
 
-    do
-    {
-        inBetween = Wire.read();
-        delay(10);
-    }
-    while (inBetween != ',');
+    while (Wire.read() != ',')
+        Wire.write(',');
 
     do
     {
         col = Wire.read();
+        Wire.write('Y');
         delay(10);
     }
     while (col < 0 && col > 8);
+
+    Wire.endTransmission();
+
+    Serial.print("(");
+    Serial.print(row);
+    Serial.print(", ");
+    Serial.print(col);
+    Serial.println(")");
 
     return new Coords(row, col);
 }
 
 void transmitCoords(int x, int y)
 {   
-    for (int i = 0; i < 10; i++)
-    {
+    Wire.beginTransmission(8);
+
+    delay(400);
+    
+    while (Wire.read() == 'X' || Wire.read() == -1)
         Wire.write(x);
-        delay(3);
-    }
 
-    for (int i = 0; i < 10; i++)
-    {
+    delay(100);
+    
+    while (Wire.read() == ',')
         Wire.write(',');
-        delay(3);
-    }
 
-    for (int i = 0; i < 10; i++)
-    {
+    delay(100);
+
+    while (Wire.read() == 'Y' || Wire.read() == -1)
         Wire.write(y);
-        delay(3);
-    }
 
     Wire.endTransmission(); // stop transmitting
 }
