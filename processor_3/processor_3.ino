@@ -478,9 +478,16 @@ void placeShips()
 Coords *findSpot(int size)
 {
     Coords *c = new Coords(t_rand(1, 8), t_rand(1, 8));
+    byte a = 0;
 
     while (!isValidSpots(c -> getX(), c -> getY(), true, size))
-        c = new Coords(3, 3); // t_rand(1, 8), t_rand(1, 8)
+    {
+        c = new Coords(t_rand(1, 8), t_rand(1, 8));
+        a++;
+
+        if (a > 50)
+            return new Coords(3, 3);
+    }
 
     return c;
 }
