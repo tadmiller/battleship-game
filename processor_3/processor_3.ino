@@ -306,11 +306,11 @@ char findInput()
 void placeShips()
 {
     placeDot(2);
-    placeDot(5);
     placeDot(3);
     placeDot(4);
     placeDot(3);
     placeDot(2);
+    placeDot(3);
 
     shipsPlaced = true;
 }
