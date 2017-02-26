@@ -207,12 +207,13 @@ Coords *recieveCoords()
         col = Wire.read();
     }
 
-    while (Wire.read() != -1)
+    do
     {
         Wire.beginTransmission(8);
         Wire.write('Y');
         Wire.endTransmission();
     }
+    while (Wire.read() != -1);
 
     Serial.print(x);
     Serial.println(row);
