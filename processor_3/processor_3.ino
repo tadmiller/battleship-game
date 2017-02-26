@@ -171,12 +171,55 @@ int t_rand(int x, int y)
 
 Coords *recieveCoords()
 {
-    
+    int row = -1;
+    int inBetween = -1;
+    int col = -1;
+
+    do
+    {
+        row = Wire.read();
+        delay(10);
+    }
+    while (row < 0 && row > 8);
+
+    do
+    {
+        inBetween = Wire.read();
+        delay(10);
+    }
+    while (inBetween != ',');
+
+    do
+    {
+        col = Wire.read();
+        delay(10);
+    }
+    while (col < 0 && col > 8);
+
+    return new Coords(row, col);
 }
 
 void transmitCoords(int x, int y)
-{
-    
+{   
+    for (int i = 0; i < 10; i++)
+    {
+        Wire.write(x);
+        delay(3);
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        Wire.write(',');
+        delay(3);
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        Wire.write(y);
+        delay(3);
+    }
+
+    Wire.endTransmission(); // stop transmitting
 }
 
 void myTurn()
@@ -184,17 +227,12 @@ void myTurn()
     Serial.println("My turn");
     updateDisplay(firedPositions);
     Coords *coord = placeDot(1);
-    int status = -1;
+    char status = 'A';
 
     Serial.println("Waiting to see if hit or not...");
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write('F');
-    Wire.write(coord -> getX());
-    Wire.write(',');
-    Wire.write(coord -> getY());
-    Wire.endTransmission(); // stop transmitting
-
-    delay(10);
+    transmitCoords(coord -> getX(), coord -> getY());
     
     while (status != 'H' && status != 'N' && status != 'D')
     {
@@ -241,9 +279,6 @@ void waitForTurn()
     Serial.println("Waiting for other player to fire...");
 
     int transmission = -1;
-    int theirRow = -1;
-    int inBetween = -1;
-    int theirCol = -1;
 
     while (transmission != 'F')
     {
@@ -251,17 +286,10 @@ void waitForTurn()
         delay(5);
     }
 
-    while (inBetween != ',' && inBetween != 'F')
-    {
-        transmission = Wire.read();
-        inBetween = Wire.read();
-        theirCol = Wire.read();
-    }
+    Coords *c = recieveCoords();
 
-    theirRow = transmission;
-
-    if (inBetween != ',' || theirRow > 7 || theirCol > 7)
-        Serial.println("Transmission invalid.");
+    int theirRow = c -> getX();
+    int theirCol = c -> getY();
 
     Serial.print("Their Row: ");
     Serial.println(theirRow);
