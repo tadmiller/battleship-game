@@ -169,6 +169,16 @@ int t_rand(int x, int y)
     return ((((int) millis()) * random(x, y)) % (y + 1));
 }
 
+Coords *recieveCoords()
+{
+    
+}
+
+void transmitCoords(int x, int y)
+{
+    
+}
+
 void myTurn()
 {
     Serial.println("My turn");
@@ -205,6 +215,9 @@ void myTurn()
         Serial.println("We've sunk their battleship!");
         shipsDestroyed++;
         firedPositions[coord -> getX()][coord -> getY()] = DESTROY;
+
+        if (shipsDestroyed == 6)
+            Serial.println("I win!");
     }
     else
     {
@@ -238,7 +251,7 @@ void waitForTurn()
         delay(5);
     }
 
-    while (inBetween != ',')
+    while (inBetween != ',' && inBetween != 'F')
     {
         transmission = Wire.read();
         inBetween = Wire.read();
@@ -346,12 +359,16 @@ void initConnection()
 
     do
     {
-        delay(t_rand(1, 100));
+        delay(50);
         Wire.beginTransmission(8); // transmit to device #8
         Wire.write('R');        // sends five bytes
         Wire.endTransmission();    // stop transmitting
     }
     while (Wire.read() != 'R');
+
+    Wire.beginTransmission(8); // transmit to device #8
+    Wire.write('R');        // sends five bytes
+    Wire.endTransmission();    // stop transmitting
 
     Serial.println("Connection established");
     Serial.flush();
@@ -397,20 +414,6 @@ void placeShips()
     placeDot(3);
     placeDot(2);
     placeDot(3);
-
-        for (int i = 0; i < 3; i++)
-        {
-            Ship *s = ships + shipNum - 1;
-            Coords *c = s -> getCoords();
-            Coords cc = c[i];
-            Serial.print("Row: ");
-            Serial.println(cc.getX());
-            Serial.print("Col: ");
-            Serial.println(cc.getY());
-        }
-
-                    
-
 
     shipsPlaced = true;
 }
