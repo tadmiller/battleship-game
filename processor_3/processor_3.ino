@@ -7,6 +7,25 @@
 #include <Keypad.h>
 #include <Wire.h>
 
+/******************/
+/* GAME MECHANICS */
+/******************/
+bool shipsPlaced = false;
+byte firedPositions[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+byte tmpDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+byte shipsLoc[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+/************************/
+/* RGB LED DISPLAY VARS */
+/************************/
+#define EMPTY 2 //2
+#define HIT 100
+#define DESTROY 64
+#define SHIP 8
+#define CURSOR 110
+#define NOHIT 0
+#define VERSION 0.14
+
 class Coords
 {
     private:
@@ -31,37 +50,83 @@ class Coords
         }
 };
 
+class Ship
+{
+    private:
+        Coords **c;
+        int size;
+        int shipNum;
+        bool destroyed;
+
+    public:
+        Ship() {}
+        Ship(int x, int y, int size, int shipNum, Coords **c)
+        {
+            this -> destroyed = false;
+            this -> c = c;
+            this -> size = size;
+            this -> shipNum = shipNum;
+        }
+
+        int getSize()
+        {
+            return size;
+        }
+
+        bool isDestroyed()
+        {
+            if (destroyed)
+                return true;
+            else
+            {
+            //Ship s = ships[shipNum - 1];
+                Coords **c = this -> getCoords();
+
+                for (int i = 0; i < this -> size; i++)
+                {
+                    Coords *cc = *(c + i);
+                    if (myShipsDisplay[cc -> getX()][cc -> getY()] == SHIP)
+                        break;
+                    else if (i == size - 1)
+                    {
+                        for (int j = 0; j < this -> size; j++)
+                        {
+                            Coords *cc = *(c + j);
+                            myShipsDisplay[cc -> getX()][cc -> getY()] = DESTROY;
+                        }
+                        this -> destroyed = true;
+                        return true;
+                    }
+                }                
+                
+                return false;
+            }
+        }
+
+        Coords **getCoords()
+        {
+            return c;
+        }
+};
+
 /*******************/
 /* KEYPAD CODE     */
 /*******************/
-char keys[4][3] = { {'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'} };
+char keys[4][3] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
 byte rowPins[4] = {8, 7, 6, 5}; //connect to the row pinouts of the keypad
 byte colPins[3] = {4, 3, 2}; //connect to the column pinouts of the keypad
-Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, 4, 3);
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, 4, 3);
 
-/************************/
-/* RGB LED DISPLAY VARS */
-/************************/
-#define EMPTY 2 //2
-#define HIT 100
-#define DESTROY 64
-#define SHIP 8
-#define CURSOR 110
-#define NOHIT 0
-#define VERSION 0.14
 
+/***************RGB*/
 int bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
-int clock = 11;  // pin SCK del display
-int data = 13;   // pin DI del display
-int cs = 12;     // pin CS del display
-/******************/
-/* GAME MECHANICS */
-/******************/
-bool shipsPlaced = false;
-byte firedPositions[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
-byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
-byte tmpDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+int clock = 11; // Pin SCK del display
+int data = 13;  // Pin DI del display
+int cs = 12;    // Pin CS del display
+/**********************/
+Ship ships[6];
 byte shipsDestroyed = 0;
+byte shipNum = 0;
 /******************/
 
 void setup()
@@ -182,7 +247,11 @@ void waitForTurn()
     {
         Serial.print("They hit us!");
         myShipsDisplay[theirRow][theirCol] = HIT;
-        status = 'H';
+
+        if (ships[shipsLoc[theirRow][theirCol]].isDestroyed())
+            status = 'D';
+        else
+            status = 'H';
     }
 
     Serial.print("Status: ");
@@ -198,6 +267,7 @@ void waitForTurn()
 
     if (status == 'H')
         waitForTurn();
+        
     myTurn();
 }
 
@@ -381,12 +451,38 @@ void displayDots(int row, int col, bool orientation, int size)
 void placeDot(int row, int col, bool orientation, int size)
 {
     if (!shipsPlaced)
+    {
+        Coords *c[size];
+        
         if (orientation)
             for (int i = 0; i < size; i++)
+            {
                 myShipsDisplay[row][col + i] = SHIP;
+                shipsLoc[row][col + i] = shipNum;
+                *(c + i) = new Coords(row, col + i);
+            }
         else
             for (int i = 0; i < size; i++)
+            {
                 myShipsDisplay[row + i][col] = SHIP;
+                shipsLoc[row + i][col] = shipNum;
+                *(c + i) = new Coords(row + i, col);
+            }
+            
+        ships[shipNum] = *(new Ship(row, col, size, shipNum, c));
+        shipNum++;
+
+        for (int i = 0; i < size; i++)
+        {
+            Ship s = ships[shipNum - 1];
+            Coords **c = s.getCoords();
+            Coords *cc = *(c + i);
+            Serial.print("Row: ");
+            Serial.println(cc -> getX());
+            Serial.print("Col: ");
+            Serial.println(cc -> getY());
+        }
+    }
     else
         firedPositions[row][col] = CURSOR;
 }
