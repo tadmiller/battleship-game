@@ -75,18 +75,18 @@ class Ship
 
         bool isDestroyed()
         {
-            if (destroyed)
+            if (this -> destroyed)
                 return true;
             else
             {
-            //Ship s = ships[shipNum - 1];
                 Coords **c = this -> getCoords();
 
                 for (int i = 0; i < this -> size; i++)
                 {
                     Coords *cc = *(c + i);
+                    
                     if (myShipsDisplay[cc -> getX()][cc -> getY()] == SHIP)
-                        break;
+                        return false;
                     else if (i == size - 1)
                     {
                         for (int j = 0; j < this -> size; j++)
@@ -189,6 +189,12 @@ void myTurn()
         Serial.println("We hit them!");
         firedPositions[coord -> getX()][coord -> getY()] = HIT;
     }
+    else if (status == 'D')
+    {
+        Serial.println("We've sunk their battleship!");
+        shipsDestroyed++;
+        firedPositions[cords -> getX()][coord -> getY()] = DESTROY;
+    }
     else
     {
         Serial.println("No hit!");
@@ -265,7 +271,7 @@ void waitForTurn()
     updateDisplay(myShipsDisplay);
     delay(2500);
 
-    if (status == 'H')
+    if (status == 'H' || status == 'D')
         waitForTurn();
         
     myTurn();
