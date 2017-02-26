@@ -116,7 +116,7 @@ void determineFirst()
 {
     Serial.println("Determining player to go first...");
     Serial.flush();
-    int myNum = random(1, 255);
+    int myNum = random(1, 80);
     int opNum = -1;
 
     do
@@ -129,7 +129,7 @@ void determineFirst()
         
         delay(random(1, 100));
     }
-    while (opNum == -1);
+    while (opNum == -1 || opNum == 82);
 
     Serial.print("My number is: ");
     Serial.println(myNum);
