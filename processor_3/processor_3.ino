@@ -121,7 +121,7 @@ void myTurn()
     Serial.println("My turn");
     updateDisplay(firedPositions);
     Coords *coord = placeDot(1);
-    char status = -1;
+    int status = -1;
 
         Serial.println("Waiting to see if hit or not...");
         Wire.beginTransmission(8); // transmit to device #8
@@ -133,8 +133,9 @@ void myTurn()
 
     while (status != 'H' && status != 'N');
     {
+        Serial.print(status);
         status = Wire.read();
-        delay(10);
+        delay(100);
     }
 
     Serial.print("Status: ");
@@ -202,13 +203,15 @@ void waitForTurn()
         status = 'H';
     }
 
-    delay(100);
+    Serial.print("Status: ");
+    Serial.println(status);
+    delay(500);
 
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write(status);
-    delay(10);
+    delay(100);
     Wire.write(status);
-    delay(10);
+    delay(100);
     Wire.write(status);
     Wire.endTransmission(); // stop transmitting
 
