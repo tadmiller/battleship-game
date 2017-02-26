@@ -118,14 +118,16 @@ void myTurn()
 {
     Serial.println("My turn");
     drawFrame(firedPositions);
-    placeDot(1);
+    Coords *coord = placeDot(1);
 
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write('F');
-    Wire.write(5);
+    Wire.write(coord -> getX());
     Wire.write(',');
-    Wire.write(6);
-    Wire.endTransmission();    // stop transmitting
+    Wire.write(coord -> getY());
+    Wire.endTransmission(); // stop transmitting
+
+    
 }
 
 void waitForTurn()
@@ -390,7 +392,7 @@ void placeDot(int row, int col, bool orientation, int size)
 // KNOWN BUGS: Can't place in spot 0x0
 // TODO: Add function that finds valid spot for ship of length int size
 // @args: size of ship
-void placeDot(int size)
+Coords *placeDot(int size)
 {
     Coords *c = findSpot(size);
     int row = c -> getX();
@@ -448,6 +450,8 @@ void placeDot(int size)
     Serial.print("Col: ");
     Serial.println(col);
     Serial.flush();
+
+    return new Coords(row, col);
 }
 
 void drawFrame(byte frame[8][8])
