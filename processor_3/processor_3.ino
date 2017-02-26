@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.18 /*
+*/ #define VERSION 0.19 /*
 
  * 
  * 
@@ -320,7 +320,7 @@ void waitForTurn()
     Serial.println(theirCol);
 
     // transmit back whether we hit H, destroyed D, or did not hit N
-    char status = 'N';
+    status = 'N';
 
     if (myShipsDisplay[theirRow][theirCol] == EMPTY)
         myShipsDisplay[theirRow][theirCol] = NOHIT;
