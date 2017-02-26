@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.161 /*
+*/ #define VERSION 0.17 /*
 
  * 
  * 
@@ -104,6 +104,7 @@ class Ship
                             
                             myShipsDisplay[row][col] = DESTROY;
                         }
+                        
                         this -> destroyed = true;
                         return true;
                     }
