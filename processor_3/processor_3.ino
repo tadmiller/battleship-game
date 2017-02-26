@@ -60,7 +60,7 @@ int cs = 12;     // pin CS del display
 #define SHIP 8
 #define CURSOR 110
 #define NOHIT 0
-#define VERSION 0.13
+#define VERSION 0.14
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -132,11 +132,9 @@ void myTurn()
         Wire.endTransmission(); // stop transmitting
 
     delay(10);
-    Serial.flush();
     
     while (status != 'H' && status != 'N')
     {
-        Serial.print(status);
         status = Wire.read();
         delay(10);
     }
@@ -211,10 +209,6 @@ void waitForTurn()
     delay(500);
 
     Wire.beginTransmission(8); // transmit to device #8
-    Wire.write(status);
-    delay(100);
-    Wire.write(status);
-    delay(100);
     Wire.write(status);
     Wire.endTransmission(); // stop transmitting
 
