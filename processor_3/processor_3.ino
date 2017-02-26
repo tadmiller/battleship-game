@@ -188,12 +188,11 @@ Coords *recieveCoords()
     Serial.println("RECIEVING COORDS");
     int x = -1;
 
-    do
+    while (x != 'X' && row < 0)
     {
         x = Wire.read();
         row = Wire.read();
     }
-    while (x != 'X' && row > 0);
     
     Wire.beginTransmission(8);
     Wire.write('R');
