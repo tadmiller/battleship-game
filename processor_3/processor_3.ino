@@ -179,22 +179,32 @@ Coords *recieveCoords()
 
     do
     {
-        row = Wire.read();
         Wire.write('X');
-        delay(10);
+        delay(100);
+        row = Wire.read();
     }
     while (row < 0 && row > 8);
 
-    while (Wire.read() != ',')
+    do
+    {
         Wire.write(',');
+        delay(100);
+    }
+    while (Wire.read() != ',');
 
     do
     {
-        col = Wire.read();
         Wire.write('Y');
-        delay(10);
+        delay(100);
+        col = Wire.read();
     }
     while (col < 0 && col > 8);
+
+    for (int i = 0; i < 10; i++)
+    {
+        Wire.write('C');
+        delay(10);
+    }
 
     Wire.endTransmission();
 
@@ -207,24 +217,23 @@ Coords *recieveCoords()
     return new Coords(row, col);
 }
 
-void transmitCoords(int x, int y)
+void transmitCoords(int x, int y, char status)
 {   
     Wire.beginTransmission(8);
 
-    delay(400);
-    
-    while (Wire.read() == 'X' || Wire.read() == -1)
-        Wire.write(x);
+    while (Wire.read() != 'X')
+        Wire.write(status);
 
-    delay(100);
+    while (Wire.read() != ',')
+        Wire.write(x);
     
-    while (Wire.read() == ',')
+    while (Wire.read() != 'Y')
         Wire.write(',');
 
-    delay(100);
-
-    while (Wire.read() == 'Y' || Wire.read() == -1)
+    while (Wire.read() != 'C')
         Wire.write(y);
+
+    delay(100);
 
     Wire.endTransmission(); // stop transmitting
 }
@@ -237,9 +246,7 @@ void myTurn()
     char status = 'A';
 
     Serial.println("Waiting to see if hit or not...");
-    Wire.beginTransmission(8); // transmit to device #8
-    Wire.write('F');
-    transmitCoords(coord -> getX(), coord -> getY());
+    transmitCoords(coord -> getX(), coord -> getY(), 'F');
     
     while (status != 'H' && status != 'N' && status != 'D')
     {
