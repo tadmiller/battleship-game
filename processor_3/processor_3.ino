@@ -56,8 +56,9 @@ int cs = 12;     // pin CS del display
 /*******************/
 #define EMPTY 2 //2
 #define HIT 100
-#define DESTROY 44
+#define DESTROY 64
 #define SHIP 8
+#define CURSOR 110
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -85,8 +86,9 @@ bool shipsPlaced = false;
 bool waitingOnOpponent = false;
 bool isMyTurn = false;
 
+byte firedPositions[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
-byte tmpShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+byte tmpDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 /******************/
 
 void setup()
@@ -109,6 +111,35 @@ void loop()
 
 void receiveEvent(int howMany)
 {
+
+}
+
+void myTurn()
+{
+    Serial.println("My turn");
+    placeDot(1);
+}
+
+void waitForTurn()
+{
+    drawFrame(myShipsDisplay);
+
+    Serial.println("Waiting for other player to fire...");
+
+    int theirRow = -1;
+    int theirCol = -1;
+
+    while (theirRow != 'F')
+    {
+        theirRow = Wire.read();
+        delay(10);
+    }
+    theirCol = Wire.read();
+
+    Serial.print("Row: ");
+    Serial.println(theirRow);
+    Serial.print("Col: ");
+    Serial.println(theirCol);
 
 }
 
@@ -137,6 +168,19 @@ void determineFirst()
     Serial.print("Op number is: ");
     Serial.println(opNum);
     Serial.flush();
+
+    if (myNum > opNum)
+    {
+        Serial.println("I go first");
+        myTurn();
+    }
+    else if (myNum == opNum)
+        determineFirst();
+    else
+    {
+        Serial.println("I go second");
+        waitForTurn();
+    }
 }
 
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
@@ -210,7 +254,7 @@ void initMatrix()
     pinMode(data, OUTPUT); 
     pinMode(cs, OUTPUT); 
 
-    updateFrame();
+    drawFrame(tmpDisplay);
 }
 
 // Get an input from the keypad
@@ -235,12 +279,14 @@ char findInput()
 // Place ALL ships
 void placeShips()
 {
-    placeShip(2);
-    placeShip(5);
-    placeShip(3);
-    placeShip(4);
-    placeShip(3);
-    placeShip(2);
+    placeDot(2);
+    placeDot(5);
+    placeDot(3);
+    placeDot(4);
+    placeDot(3);
+    placeDot(2);
+
+    shipsPlaced = true;
 }
 
 Coords *findSpot(int size)
@@ -275,41 +321,55 @@ bool isValidSpots(int row, int col, bool orientation, int size)
 
 bool isValidSpot(int row, int col)
 {
-    return myShipsDisplay[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
-}
-
-void cpyTmpShips()
-{
-    for (int i = 0; i < 8; i++)
-        for (int j = 0; j < 8; j++)
-            tmpShipsDisplay[i][j] = myShipsDisplay[i][j];
-}
-
-void displayShip(int row, int col, bool orientation, int size)
-{
-    if (orientation)
-        for (int i = 0; i < size; i++)
-            tmpShipsDisplay[row][col + i] = SHIP;
+    if (!shipsPlaced)
+        return myShipsDisplay[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
     else
-        for (int i = 0; i < size; i++)
-            tmpShipsDisplay[row + i][col] = SHIP;   
+        return firedPositions[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
 }
 
-void placeShip(int row, int col, bool orientation, int size)
+void cpyTmpDisplay()
 {
-    if (orientation)
-        for (int i = 0; i < size; i++)
-            myShipsDisplay[row][col + i] = SHIP;
+    if (!shipsPlaced)
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                tmpDisplay[i][j] = myShipsDisplay[i][j];
     else
-        for (int i = 0; i < size; i++)
-            myShipsDisplay[row + i][col] = SHIP;       
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                tmpDisplay[i][j] = firedPositions[i][j];
+}
+
+void displayDots(int row, int col, bool orientation, int size)
+{
+    if (!shipsPlaced)
+        if (orientation)
+            for (int i = 0; i < size; i++)
+                tmpDisplay[row][col + i] = SHIP;
+        else
+            for (int i = 0; i < size; i++)
+                tmpDisplay[row + i][col] = SHIP;
+    else
+        tmpDisplay[row][col] = CURSOR;
+}
+
+void placeDot(int row, int col, bool orientation, int size)
+{
+    if (!shipsPlaced)
+        if (orientation)
+            for (int i = 0; i < size; i++)
+                myShipsDisplay[row][col + i] = SHIP;
+        else
+            for (int i = 0; i < size; i++)
+                myShipsDisplay[row + i][col] = SHIP;
+    else
+        firedPositions[row][col] = CURSOR;
 }
 
 // Place one ship
 // KNOWN BUGS: Can't place in spot 0x0
 // TODO: Add function that finds valid spot for ship of length int size
 // @args: size of ship
-void placeShip(int size)
+void placeDot(int size)
 {
     Coords *c = findSpot(size);
     int row = c -> getX();
@@ -319,9 +379,9 @@ void placeShip(int size)
 
     while (true)
     {
-        cpyTmpShips();
-        displayShip(row, col, orientation, size);
-        updateFrame();
+        cpyTmpDisplay();
+        displayDots(row, col, orientation, size);
+        drawFrame(tmpDisplay);
 
         action = findInput();
         
@@ -351,7 +411,7 @@ void placeShip(int size)
         {
             if (isValidSpots(row, col, orientation, size))
             {
-                placeShip(row, col, orientation, size);
+                placeDot(row, col, orientation, size);
                 break;
             }
             else
@@ -367,13 +427,6 @@ void placeShip(int size)
     Serial.print("Col: ");
     Serial.println(col);
     Serial.flush();
-}
-
-void updateFrame()
-{
-    drawFrame(tmpShipsDisplay);
-    delay(10);
-    //drawFrame(myShipsDisplay);
 }
 
 void drawFrame(byte frame[8][8])
