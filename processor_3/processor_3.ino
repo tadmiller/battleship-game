@@ -134,19 +134,27 @@ void waitForTurn()
 
     Serial.println("Waiting for other player to fire...");
 
+    int transmission = -1;
     int theirRow = -1;
     int inBetween = -1;
     int theirCol = -1;
 
-    while (Wire.read() != 'F')
+    while (transmission != 'F')
     {
-        theirRow = Wire.read();
+        transmission = Wire.read();
         delay(5);
     }
-    inBetween = Wire.read();
-    theirCol = Wire.read();
 
-    if (inBetween != ',')
+    while (inBetween != ',')
+    {
+        transmission = Wire.read();
+        inBetween = Wire.read();
+        theirCol = Wire.read();
+    }
+
+    theirRow = transmission;
+
+    if (inBetween != ',' || theirRow > 7 || theirCol > 7)
         Serial.println("Transmission invalid.");
 
     Serial.print("Row: ");
