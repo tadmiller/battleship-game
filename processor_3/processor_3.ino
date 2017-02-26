@@ -88,18 +88,27 @@ byte myShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2},
 byte tmpShipsDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 /******************/
 
-int main()
+void setup()
 {
     init();
     Serial.begin(9600);
     Wire.begin(8);
+    Wire.onReceive(receiveEvent);
 
-    //initMatrix();
-    //initGame();
+    initMatrix();
+    initGame();
     initConnection();
 }
 
+void loop()
+{
+    
+}
 
+void receiveEvent(int howMany)
+{
+
+}
 
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
 void initGame()
@@ -112,41 +121,24 @@ void initGame()
 
 void initConnection()
 {
-    Serial.println("Waiting for connection from other Arduino.");
-    Serial.flush();
-    
-    Wire.requestFrom(1, 6);
-    
-
-//    while (1)
-//    {
-//        Wire.write('B');
-//        char c = Wire.read();
-//        Serial.print(".");
-//        Serial.flush();
-//        delay(50);
-//
-//        if (c == 'B')
-//            break;
-//    }
-
     while (1)
     {
-        while (Wire.available())
-        {   // slave may send less than requested
-
-            Wire.beginTransmission(8);
-            Wire.write("hello ");
-            Wire.endTransmission();
-            Serial.println("Reading from other processor");
-            Serial.flush();
-            char c = Wire.read(); // receive a byte as character
-            Serial.print(c);         // print the character
-    
-            delayMicroseconds(random(1, 1000));
+        while (1 < Wire.available())
+        { // loop through all but the last
+          char c = Wire.read(); // receive byte as a character
+          Serial.print(c);         // print the character
         }
+        int x = Wire.read();    // receive byte as an integer
+        Serial.println(x);         // print the integer
+        delay(random(1, 100));
+    
+        Wire.beginTransmission(8); // transmit to device #8
+        Wire.write("x is ");        // sends five bytes
+        Wire.write(a);              // sends one byte
+        Wire.endTransmission();    // stop transmitting
+    
+        a++;
     }
-
 
     Serial.println("Connection established");
     Serial.flush();
