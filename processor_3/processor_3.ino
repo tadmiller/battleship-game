@@ -155,7 +155,7 @@ void receiveEvent(int howMany)
 
 int t_rand(int x, int y)
 {
-    return (((int) millis()) * random(x, y) * analogRead(1)) % (y + 1);
+    return ((((int) millis()) * random(x, y)) % (y + 1));
 }
 
 void myTurn()
@@ -330,7 +330,6 @@ void initConnection()
     do
     {
         delay(t_rand(1, 100));
-        Serial.println("GO");
         Wire.beginTransmission(8); // transmit to device #8
         Wire.write('R');        // sends five bytes
         Wire.endTransmission();    // stop transmitting
