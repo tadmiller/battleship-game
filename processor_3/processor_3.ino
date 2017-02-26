@@ -193,6 +193,7 @@ Coords *recieveCoords()
         while (Wire.available())
         {
             Serial.print(Wire.read());
+            Serial.print(' ');
             bitsRecieved++;
         }
 
@@ -214,7 +215,7 @@ void transmitCoords(int x, int y, char status)
 
     requested = false;
     Serial.print("Sending: ");
-    Serial.println(s);
+    Serial.println(s.c_str());
     while (!requested)
         Wire.write(s.c_str());
 
