@@ -133,10 +133,10 @@ void myTurn()
 
     delay(10);
     Serial.flush();
-    Serial.println(Wire.read());
-    while (Wire.read() != -1);
+    
+    while (status != 'H' && status != 'N')
     {
-        Serial.println(status);
+        Serial.print(status);
         status = Wire.read();
         delay(10);
     }
