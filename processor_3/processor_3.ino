@@ -59,6 +59,7 @@ int cs = 12;     // pin CS del display
 #define DESTROY 64
 #define SHIP 8
 #define CURSOR 110
+#define NOHIT 0
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -127,7 +128,18 @@ void myTurn()
     Wire.write(coord -> getY());
     Wire.endTransmission(); // stop transmitting
 
-    
+    char status = -1;
+
+    while (status == -1)
+        status = Wire.read();
+
+    if (status == 'H')
+        firedPositions[row][col] = HIT;
+    else
+        firedPositions[row][col] = NOHIT;
+
+    delay(2000);
+    waitForTurn();
 }
 
 void waitForTurn()
@@ -164,6 +176,23 @@ void waitForTurn()
     Serial.print("Col: ");
     Serial.println(theirCol);
 
+    // transmit back whether we hit H, destroyed D, or did not hit N
+    char status = 'N';
+
+    if (myShipsDisplay[row][col] == EMPTY)
+        myShipsDisplay[row][col] = NOHIT;
+    else if (myShipsDisplay[row][col] == SHIP)
+    {
+        myShipsDisplay[row][col] = HIT;
+        status = 'H';
+    }
+
+    Wire.write(status);
+
+    drawFrame(myShipsDisplay);
+
+    delay(2000);
+    myTurn();
 }
 
 void determineFirst()
