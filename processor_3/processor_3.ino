@@ -217,13 +217,7 @@ void transmitCoords(int x, int y)
         Serial.println("Waiting for request...");
     }
 
-    requested = false;
-    Serial.print("Sending: ");
-    Serial.println(s.c_str());
-    while (!requested)
-        Wire.write(s.c_str());
 
-    requested = false;
     delay(100);
 }
 
