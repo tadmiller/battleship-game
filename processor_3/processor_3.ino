@@ -59,7 +59,7 @@ int cs = 12;     // pin CS del display
 #define DESTROY 64
 #define SHIP 8
 #define CURSOR 110
-#define NOHIT 1
+#define NOHIT 0
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -120,18 +120,18 @@ void myTurn()
     Serial.println("My turn");
     updateDisplay(firedPositions);
     Coords *coord = placeDot(1);
+    char status = -1;
 
+    while (status == -1)
+    {
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write('F');
     Wire.write(coord -> getX());
     Wire.write(',');
     Wire.write(coord -> getY());
     Wire.endTransmission(); // stop transmitting
-
-    char status = -1;
-
-    while (status == -1)
-        status = Wire.read();
+    status = Wire.read();
+    }
 
     if (status == 'H')
         firedPositions[coord -> getX()][coord -> getY()] = HIT;
@@ -172,9 +172,9 @@ void waitForTurn()
     if (inBetween != ',' || theirRow > 7 || theirCol > 7)
         Serial.println("Transmission invalid.");
 
-    Serial.print("Row: ");
+    Serial.print("Their Row: ");
     Serial.println(theirRow);
-    Serial.print("Col: ");
+    Serial.print("Their Col: ");
     Serial.println(theirCol);
 
     // transmit back whether we hit H, destroyed D, or did not hit N
@@ -188,10 +188,11 @@ void waitForTurn()
         status = 'H';
     }
 
+    Wire.beginTransmission(8); // transmit to device #8
     Wire.write(status);
+    Wire.endTransmission(); // stop transmitting
 
     updateDisplay(myShipsDisplay);
-
     delay(2000);
     myTurn();
 }
