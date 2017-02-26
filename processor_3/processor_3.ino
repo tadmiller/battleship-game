@@ -192,9 +192,12 @@ Coords *recieveCoords()
     {
         while (Wire.available())
         {
-            Serial.print(Wire.read());
+            char s = Wire.read();
+            Serial.print(s);
             Serial.print(' ');
-            bitsRecieved++;
+            
+            if (s != 255 && s != 0)
+                bitsRecieved++;
         }
 
         delay(100);
@@ -211,7 +214,10 @@ void transmitCoords(int x, int y, char status)
     String s = String(status) + String(x) + ',' + String(y);
 
     while (!requested)
+    {
         delay(100);
+        Serial.println("Waiting for request...");
+    }
 
     requested = false;
     Serial.print("Sending: ");
