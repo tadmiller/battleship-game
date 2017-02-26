@@ -60,7 +60,7 @@ class Ship
 
     public:
         Ship() {}
-        Ship(int x, int y, int size, int shipNum, Coords **c)
+        Ship(int x, int y, int size, int shipNum, Coords *c[])
         {
             this -> destroyed = false;
             this -> c = c;
@@ -132,7 +132,7 @@ int clock = 11; // Pin SCK del display
 int data = 13;  // Pin DI del display
 int cs = 12;    // Pin CS del display
 /**********************/
-Ship ships[6];
+Ship *ships = new Ship[6];
 byte shipsDestroyed = 0;
 byte shipNum = 0;
 /******************/
@@ -395,6 +395,20 @@ void placeShips()
     placeDot(2);
     placeDot(3);
 
+        for (int i = 0; i < 3; i++)
+        {
+            Ship *s = ships + shipNum - 1;
+            Coords **c = s -> getCoords();
+            Coords *cc = *(c + i);
+            Serial.print("Row: ");
+            Serial.println(cc -> getX());
+            Serial.print("Col: ");
+            Serial.println(cc -> getY());
+        }
+
+                    
+
+
     shipsPlaced = true;
 }
 
@@ -482,12 +496,15 @@ void placeDot(int row, int col, bool orientation, int size)
                 *(c + i) = new Coords(row + i, col);
             }
             
-        ships[shipNum] = *(new Ship(row, col, size, shipNum, c));
+        ships[shipNum] = Ship(row, col, size, shipNum, c);
         shipNum++;
+        Serial.print("Ship num: ");
+        Serial.println(shipNum);
 
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < 2; i++)
         {
-            Ship s = ships[shipNum - 1];
+            Serial.println("Ship 0");
+            Ship s = ships[0];
             Coords **c = s.getCoords();
             Coords *cc = *(c + i);
             Serial.print("Row: ");
