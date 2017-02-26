@@ -1,5 +1,5 @@
 /**
- * @version 0.1
+ * @version 0.11
  * 
  * 
  */
@@ -60,6 +60,7 @@ int cs = 12;     // pin CS del display
 #define SHIP 8
 #define CURSOR 110
 #define NOHIT 0
+#define VERSION 0.12
 byte bitmaps[10][8][8];     // Space for 10 frames of 8x8 pixels
 byte displayPicture[8][8];  // What is currently ON display.
 
@@ -122,7 +123,7 @@ void myTurn()
     Coords *coord = placeDot(1);
     char status = -1;
 
-    while (status == -1 && status != 'F')
+    while (status == -1 || status == 'F')
     {
         Serial.println("Waiting to see if hit or not...");
         Wire.beginTransmission(8); // transmit to device #8
@@ -253,7 +254,9 @@ void determineFirst()
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
 void initGame()
 {
-    Serial.println("Starting Battleship...");
+    Serial.print("Starting Battleship v");
+    Serial.print(VERSION);
+    Serial.println("...");
     Serial.flush();
 
     placeShips();
