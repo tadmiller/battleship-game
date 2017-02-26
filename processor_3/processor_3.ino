@@ -122,7 +122,7 @@ void myTurn()
     Coords *coord = placeDot(1);
     char status = -1;
 
-    while (status == -1)
+    while (status == -1 && status != 'F')
     {
         Serial.println("Waiting to see if hit or not...");
         Wire.beginTransmission(8); // transmit to device #8
