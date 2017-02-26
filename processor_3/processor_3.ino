@@ -129,7 +129,7 @@ void determineFirst()
         
         delay(random(1, 100));
     }
-    while (opNum == -1 && opNum != 82)
+    while (opNum == -1 || opNum == 82);
 
     Serial.print("My number is: ");
     Serial.println(myNum);
