@@ -242,6 +242,10 @@ Coords *recieveCoords()
 
 void transmitCoords(int x, int y)
 {   
+    Serial.print("Transmitting: ");
+    Serial.print(x);
+    Serial.print(", ");
+    Serial.println(y);
     do
     {
         Wire.flush();
@@ -282,8 +286,14 @@ void myTurn()
     Wire.write('F');
     Wire.endTransmission();
     
-    Serial.println("Transmitting coordinates!");
-    transmitCoords(coord -> getX(), coord -> getY());
+    Serial.print("Transmitting coordinates! (");
+    int x = coord -> getX();
+    int y = coord -> getY();
+    Serial.print(x);
+    Serial.print(", ");
+    Serial.print(y);
+    Serial.println(")");
+    transmitCoords(x, y);
     
     while (status != 'H' && status != 'N' && status != 'D')
     {
@@ -391,10 +401,12 @@ void waitForTurn()
             Coords cc = ships[shipsLoc[theirRow][theirCol]].getCoords()[i];
 
             Serial.print("Transmitting coord ");
-            Serial.print(cc.getX());
+            int row = cc.getX();
+            int col = cc.getY();
+            Serial.print(row);
             Serial.print(", ");
-            Serial.print(cc.getY());
-            transmitCoords(cc.getX(), cc.getY());
+            Serial.print(col);
+            transmitCoords(row, col);
         }
         delay(100);
         Serial.println("Done transmitting coordinates");
