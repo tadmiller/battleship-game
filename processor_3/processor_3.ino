@@ -189,11 +189,13 @@ Coords *recieveCoords()
     int x = -1;
     int y = -1;
 
+    byte count = 0;
+
     while (x != 88 || row > 7 || row < 0)
     {
         Wire.flush();
         x = Wire.read();
-        delay(8);
+        delay(7);
         row = Wire.read();
 
         Serial.print(x);
@@ -215,12 +217,19 @@ Coords *recieveCoords()
         Wire.endTransmission();
 
         y = Wire.read();
-        delay(8);
+        delay(7);
+        count++;
         col = Wire.read();
 
         Serial.print(y);
         Serial.print(";");
         Serial.println(col);
+
+        if (col == 89 && y < 8 && y > 0 && count > 6)
+        {
+            y = col;
+            break;
+        }
     }
 
     delay(100);
