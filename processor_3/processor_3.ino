@@ -376,14 +376,11 @@ void waitForTurn()
         {
             Coords cc = ships[shipsLoc[theirRow][theirCol]].getCoords()[i];
 
-            if (cc.getX() != c -> getX() && cc.getY() != c -> getY())
-            {
                 Serial.print("Transmitting coord ");
                 Serial.print(cc.getX());
                 Serial.print(", ");
                 Serial.print(cc.getY());
                 transmitCoords(cc.getX(), cc.getY());
-            }
         }
         delay(100);
         Serial.println("Done transmitting coordinates");
@@ -469,6 +466,8 @@ void initConnection()
     while (Wire.read() != 'R');
 
     Wire.beginTransmission(8); // transmit to device #8
+    Wire.write('R');        // sends five bytes
+    delay(50);
     Wire.write('R');        // sends five bytes
     Wire.endTransmission();    // stop transmitting
 
