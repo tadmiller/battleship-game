@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.22 /*
+*/ #define VERSION 0.23 /*
 
  * 
  * 
@@ -19,7 +19,7 @@ byte shipsLoc[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0
 /************************/
 /* RGB LED DISPLAY VARS */
 /************************/
-#define EMPTY 2 //2
+#define EMPTY 2
 #define HIT 100
 #define DESTROY 64
 #define SHIP 8
@@ -191,6 +191,7 @@ Coords *recieveCoords()
 
     while (x != 88 || row > 7 || row < 0)
     {
+        Wire.flush();
         x = Wire.read();
         delay(8);
         row = Wire.read();
@@ -202,6 +203,7 @@ Coords *recieveCoords()
     
     while (y != 89 || row > 7 || row < 0)
     {
+        Wire.flush();
         Wire.beginTransmission(8);
         Wire.write('X');
         Wire.endTransmission();
@@ -219,6 +221,7 @@ Coords *recieveCoords()
 
     do
     {
+        Wire.flush();
         Wire.beginTransmission(8);
         Wire.write('Y');
         Wire.endTransmission();
@@ -241,6 +244,7 @@ void transmitCoords(int x, int y)
 {   
     do
     {
+        Wire.flush();
         Wire.beginTransmission(8);
         Wire.write('X');
         delay(10);
@@ -253,6 +257,7 @@ void transmitCoords(int x, int y)
 
     do
     {
+        Wire.flush();
         Wire.beginTransmission(8);
         Wire.write('Y');
         delay(10);
