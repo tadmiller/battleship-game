@@ -277,7 +277,7 @@ void myTurn()
 {
     Serial.println("My turn");
     updateDisplay(firedPositions);
-    Coords *coord = placeDot(1);
+    Coords coord = placeDot(1);
     char status = 'A';
 
     Wire.beginTransmission(8);
@@ -287,8 +287,8 @@ void myTurn()
     Wire.endTransmission();
     
     Serial.print("Transmitting coordinates! (");
-    int x = coord -> getX();
-    int y = coord -> getY();
+    int x = coord.getX();
+    int y = coord.getY();
     Serial.print(x);
     Serial.print(", ");
     Serial.print(y);
@@ -307,13 +307,13 @@ void myTurn()
     if (status == 'H')
     {
         Serial.println("We hit them!");
-        firedPositions[coord -> getX()][coord -> getY()] = HIT;
+        firedPositions[coord.getX()][coord.getY()] = HIT;
     }
     else if (status == 'D')
     {
         Serial.println("We've sunk their battleship!");
         shipsDestroyed++;
-        firedPositions[coord -> getX()][coord -> getY()] = DESTROY;
+        firedPositions[coord.getX()][coord.getY()] = DESTROY;
 
         Serial.println("Lighting up spots destroyed as RED");
         while (Wire.read() != 'L')
@@ -334,7 +334,7 @@ void myTurn()
     else
     {
         Serial.println("No hit!");
-        firedPositions[coord -> getX()][coord -> getY()] = NOHIT;
+        firedPositions[coord.getX()][coord.getY()] = NOHIT;
     }
 
     updateDisplay(firedPositions);
@@ -656,7 +656,7 @@ void placeDot(int row, int col, bool orientation, int size)
 // Place one ship
 // TODO: Add function that finds valid spot for ship of length int size
 // @args: size of ship
-Coords *placeDot(int size)
+Coords placeDot(int size)
 {
     Coords *c = new Coords(3, 3); //findSpot(size);
     int row = c -> getX();
@@ -715,7 +715,8 @@ Coords *placeDot(int size)
     Serial.println(col);
     Serial.flush();
 
-    return new Coords(row, col);
+    Coords *ccc = new Coords(row, col);
+    return *ccc;
 }
 
 void updateDisplay(byte frame[8][8])
