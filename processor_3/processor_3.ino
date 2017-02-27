@@ -533,18 +533,9 @@ void placeShips()
 Coords *findSpot(int size)
 {
     Coords *c = new Coords(t_rand(1, 8), t_rand(1, 8));
-    byte a = 0;
 
-    while (!isValidSpots(c -> getX(), c -> getY(), true, size))
-    {
-        c = new Coords(t_rand(1, 8), t_rand(1, 8));
-        a++;
-
-        if (a > 10)
-            return new Coords(3, 3);
-    }
-
-    return c;
+    Serial.println("Returning spot...");
+    return isValidSpots(c -> getX(), c -> getY(), true, size) ? c : new Coords(3, 3);
 }
 
 // orientation 0 = down/up, 1 = left/right
