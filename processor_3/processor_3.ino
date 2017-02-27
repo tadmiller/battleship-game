@@ -189,7 +189,7 @@ Coords *recieveCoords()
     int x = -1;
     int y = -1;
 
-    while (x != 88 && !(row > 0 && row < 8))
+    while (x != 88 || !(row > 0 && row < 8))
     {
         x = Wire.read();
         delay(5);
@@ -200,7 +200,7 @@ Coords *recieveCoords()
         Serial.println(row);
     }
     
-    while (y != 89 && !(col > 0 && col < 8))
+    while (y != 89 || !(col > 0 && col < 8))
     {
         Wire.beginTransmission(8);
         Wire.write('X');
