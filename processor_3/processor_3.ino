@@ -301,7 +301,7 @@ void myTurn()
         {
             Coords *c = recieveCoords();
             firedPositions[c -> getX()][c -> getY()] = DESTROY;
-            delay(5);
+            delay(15);
         }
         
         if (shipsDestroyed == 6)
@@ -381,6 +381,8 @@ void waitForTurn()
         }
 
         Wire.beginTransmission(8);
+        Wire.write('D');
+        delay(15);
         Wire.write('D');
         delay(15);
         Wire.write('D');
