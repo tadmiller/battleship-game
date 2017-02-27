@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.21 /*
+*/ #define VERSION 0.22 /*
 
  * 
  * 
@@ -296,6 +296,14 @@ void myTurn()
         shipsDestroyed++;
         firedPositions[coord -> getX()][coord -> getY()] = DESTROY;
 
+        Serial.println("Lighting up spots destroyed as RED");
+        while (Wire.read() != 'D')
+        {
+            Coords *c = recieveCoords();
+            firedPositions[c -> getX()][c -> getY()] = DESTROY;
+            delay(5);
+        }
+        
         if (shipsDestroyed == 6)
             Serial.println("I win!");
     }
@@ -361,6 +369,23 @@ void waitForTurn()
     Wire.endTransmission(); // stop transmitting
 
     updateDisplay(myShipsDisplay);
+
+    if (status == 'D')
+    {
+        for (int i = 0; i < ships[shipsLoc[theirRow][theirCol]].getSize(); i++)
+        {
+            Coords cc = ships[shipsLoc[theirRow][theirCol]].getCoords()[i];
+
+            if (cc.getX() != c -> getX() && cc.getY() != c -> getY())
+                transmitCoords(cc.getX(), cc.getY());
+        }
+
+        Wire.beginTransmission(8);
+        Wire.write('D');
+        delay(15);
+        Wire.write('D');
+        Wire.endTransmission();
+    }
     delay(2500);
 
     if (status == 'H' || status == 'D')
