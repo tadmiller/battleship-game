@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.24 /*
+*/ #define VERSION 0.3 /*
 
  * 
  * 
@@ -360,9 +360,9 @@ void myTurn()
 
         while (1)
         {
-            updateFrame(win);
+            updateDisplay(win);
             delay(500);
-            updateFrame(firedPositions);
+            updateDisplay(firedPositions);
             delay(500);
         }
     }
