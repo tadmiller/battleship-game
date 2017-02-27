@@ -232,6 +232,8 @@ Coords *recieveCoords()
     Serial.print(y);
     Serial.println(col);
 
+    Wire.flush();
+
     return new Coords(row > 8 ? row % 8 : row, col > 8 ? col % 8 : col);
 }
 
@@ -258,6 +260,8 @@ void transmitCoords(int x, int y)
         Wire.endTransmission();
     }
     while (Wire.read() != 'Y');
+
+    Wire.flush();
 }
 
 void myTurn()
