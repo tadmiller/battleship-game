@@ -377,9 +377,16 @@ void waitForTurn()
             Coords cc = ships[shipsLoc[theirRow][theirCol]].getCoords()[i];
 
             if (cc.getX() != c -> getX() && cc.getY() != c -> getY())
+            {
+                Serial.print("Transmitting coord ");
+                Serial.print(cc.getX());
+                Serial.print(", ");
+                Serial.print(cc.getY());
                 transmitCoords(cc.getX(), cc.getY());
+            }
         }
-
+        delay(100);
+        Serial.println("Done transmitting coordinates");
         Wire.beginTransmission(8);
         Wire.write('L');
         delay(15);
