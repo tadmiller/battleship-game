@@ -420,9 +420,14 @@ void determineFirst()
         Wire.write(myNum);        // sends five bytes
         Wire.endTransmission();    // stop transmitting
         
-        delay(t_rand(1, 100));
+        delay(10);
     }
     while (opNum == -1 || opNum == 82);
+        
+    delay(10);
+    Wire.beginTransmission(8); // transmit to device #8
+    Wire.write(myNum);        // sends five bytes
+    Wire.endTransmission();    // stop transmitting
 
     Serial.print("My number is: ");
     Serial.println(myNum);
