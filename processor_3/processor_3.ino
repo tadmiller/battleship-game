@@ -409,7 +409,8 @@ void determineFirst()
 {
     Serial.println("Determining player to go first...");
     Serial.flush();
-    int myNum = t_rand(1, 80);
+    int rnd = t_rand(1, 80);
+    int myNum = rnd > 0 ? rnd : -rnd;
     int opNum = -1;
 
     do
@@ -420,11 +421,11 @@ void determineFirst()
         Wire.write(myNum);        // sends five bytes
         Wire.endTransmission();    // stop transmitting
         
-        delay(10);
+        delay(50);
     }
     while (opNum == -1 || opNum == 82);
         
-    delay(10);
+    delay(25);
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write(myNum);        // sends five bytes
     Wire.endTransmission();    // stop transmitting
