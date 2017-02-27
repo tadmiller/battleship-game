@@ -232,7 +232,7 @@ Coords *recieveCoords()
     Serial.print(y);
     Serial.println(col);
 
-    return new Coords(row, col);
+    return new Coords(row % 8, col % 8);
 }
 
 void transmitCoords(int x, int y)
