@@ -646,7 +646,7 @@ void placeDot(int row, int col, bool orientation, int size)
 // @args: size of ship
 Coords *placeDot(int size)
 {
-    Coords *c = findSpot(size);
+    Coords *c = new Coords(3, 3); //findSpot(size);
     int row = c -> getX();
     int col = c -> getY();
     bool orientation = true;
