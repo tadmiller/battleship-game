@@ -1,5 +1,5 @@
 /**
-*/ #define VERSION 0.23 /*
+*/ #define VERSION 0.24 /*
 
  * 
  * 
@@ -202,7 +202,7 @@ Coords *recieveCoords()
         Serial.print(":");
         Serial.println(row);
 
-        if (row == 88 && x < 8 && x > 0)
+        if (x == 88 && row < 8 && row > 0)
         {
             x = row;
             break;
@@ -225,7 +225,7 @@ Coords *recieveCoords()
         Serial.print(";");
         Serial.println(col);
 
-        if (col == 89 && y < 8 && y > 0 && count > 6)
+        if (y == 89 && col < 8 && col > 0 && count > 6)
         {
             y = col;
             break;
