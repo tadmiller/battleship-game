@@ -297,7 +297,7 @@ void myTurn()
         firedPositions[coord -> getX()][coord -> getY()] = DESTROY;
 
         Serial.println("Lighting up spots destroyed as RED");
-        while (Wire.read() != 'D')
+        while (Wire.read() != 'L')
         {
             Coords *c = recieveCoords();
             firedPositions[c -> getX()][c -> getY()] = DESTROY;
@@ -381,11 +381,11 @@ void waitForTurn()
         }
 
         Wire.beginTransmission(8);
-        Wire.write('D');
+        Wire.write('L');
         delay(15);
-        Wire.write('D');
+        Wire.write('L');
         delay(15);
-        Wire.write('D');
+        Wire.write('L');
         Wire.endTransmission();
     }
     delay(2500);
