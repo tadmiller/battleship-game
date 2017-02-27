@@ -299,9 +299,14 @@ void myTurn()
         Serial.println("Lighting up spots destroyed as RED");
         while (Wire.read() != 'L')
         {
+            delay(100);
+
+            if (Wire.read() == 'L')
+                break;
+                
             Coords *c = recieveCoords();
             firedPositions[c -> getX()][c -> getY()] = DESTROY;
-            delay(15);
+
         }
         
         if (shipsDestroyed == 6)
