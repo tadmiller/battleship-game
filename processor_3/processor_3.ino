@@ -1,7 +1,8 @@
 /**
 */ #define VERSION 0.3 /*
-
  * 
+ * @authors Tad Miller, Danny Nsouli
+ * @desc This processor drives the engine of Battleship
  * 
  */
 
@@ -18,6 +19,7 @@ byte tmpDisplay[8][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}, {2,
 byte shipsLoc[8][8] = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
 byte win[8][8] = {{4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}};
 byte lose[8][8] = {{64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64, 64}};
+
 /************************/
 /* RGB LED DISPLAY VARS */
 /************************/
@@ -27,6 +29,12 @@ byte lose[8][8] = {{64, 64, 64, 64, 64, 64, 64, 64}, {64, 64, 64, 64, 64, 64, 64
 #define SHIP 8
 #define CURSOR 110
 #define NOHIT 0
+
+/*
+ * @class Coords 
+ * @desc This stores the information of a coordinate, x and y, or row and col.
+ * 
+ */
 
 class Coords
 {
@@ -54,6 +62,12 @@ class Coords
         }
 };
 
+/*
+ * @class Ship
+ * @desc This class stores all of the informatoin about a ship.
+ *       It allows us to determine the coordinates from transmitting destroy data
+ * 
+ */
 class Ship
 {
     private:
@@ -122,27 +136,30 @@ class Ship
         }
 };
 
-/*******************/
-/* KEYPAD CODE     */
-/*******************/
+/*********************/
+/*    KEYPAD CODE    */
+/*********************/
 char keys[4][3] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
 byte rowPins[4] = {8, 7, 6, 5}; //connect to the row pinouts of the keypad
 byte colPins[3] = {4, 3, 2}; //connect to the column pinouts of the keypad
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, 4, 3);
 
-
-/***************RGB*/
+/*********************/
+/*    RGB DISPLAY    */
+/*********************/
 int bits[8] = {128, 64, 32, 16, 8, 4, 2, 1};
 int clock = 11; // Pin SCK del display
 int data = 13;  // Pin DI del display
 int cs = 12;    // Pin CS del display
-/**********************/
+/******/
 Ship *ships = new Ship[6];
 byte shipsDestroyed = 0;
 byte shipNum = 0;
 /******************/
 
-/*****TRANSMISSION*****/
+/*********************/
+/*   TRANSMISSION    */
+/*********************/
 bool requested = false;
 bool recieved = false;
 
@@ -155,28 +172,38 @@ void setup()
     Wire.onReceive(receiveEvent);
     Wire.onRequest(requestEvent);
 
+    // Initialize RGB LED matrix
     initMatrix();
+
+    // Initialize game mechanics
     initGame();
+
+    // Initialize connection between arduinos
     initConnection();
+
+    // Get player 1, start flow of program
     determineFirst();
 }
 
+// Unused
 void loop()
 {
-    
 }
 
+// Unused
 void receiveEvent(int howMany)
 {
     recieved = true;
 }
 
+// Unused
 void requestEvent(int howMany)
 {
     Serial.println("Bytes have been requested!");
     requested = true;
 }
 
+// Return a random value generated from time and random()
 int t_rand(int x, int y)
 {
     return ((((int) millis()) * random(x, y)) % (y + 1));
