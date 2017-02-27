@@ -192,7 +192,7 @@ Coords *recieveCoords()
     while (x != 88 || row > 7 || row < 0)
     {
         x = Wire.read();
-        delay(5);
+        delay(8);
         row = Wire.read();
 
         Serial.print(x);
@@ -207,7 +207,7 @@ Coords *recieveCoords()
         Wire.endTransmission();
 
         y = Wire.read();
-        delay(5);
+        delay(8);
         col = Wire.read();
 
         Serial.print(y);
@@ -381,11 +381,11 @@ void waitForTurn()
         {
             Coords cc = ships[shipsLoc[theirRow][theirCol]].getCoords()[i];
 
-                Serial.print("Transmitting coord ");
-                Serial.print(cc.getX());
-                Serial.print(", ");
-                Serial.print(cc.getY());
-                transmitCoords(cc.getX(), cc.getY());
+            Serial.print("Transmitting coord ");
+            Serial.print(cc.getX());
+            Serial.print(", ");
+            Serial.print(cc.getY());
+            transmitCoords(cc.getX(), cc.getY());
         }
         delay(100);
         Serial.println("Done transmitting coordinates");
