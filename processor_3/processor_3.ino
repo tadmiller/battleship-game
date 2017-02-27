@@ -199,6 +199,13 @@ Coords *recieveCoords()
         Serial.print(x);
         Serial.print(":");
         Serial.println(row);
+
+        if (row == 88 && x < 8 && x > 0)
+        {
+            int tmp = row;
+            row = x;
+            x = tmp;
+        }
     }
     
     while (y != 89 || row > 7 || row < 0)
@@ -215,6 +222,13 @@ Coords *recieveCoords()
         Serial.print(y);
         Serial.print(";");
         Serial.println(col);
+
+        if (col == 88 && y < 8 && y > 0)
+        {
+            int tmp = col;
+            col = y;
+            y = tmp;
+        }
     }
 
     delay(100);
@@ -329,7 +343,14 @@ void myTurn()
         }
         
         if (shipsDestroyed == 6)
+        {
             Serial.println("I win!");
+
+            while (1)
+            {
+                
+            }
+        }
     }
     else
     {
