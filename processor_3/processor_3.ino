@@ -202,9 +202,8 @@ Coords *recieveCoords()
 
         if (row == 88 && x < 8 && x > 0)
         {
-            int tmp = row;
-            row = x;
-            x = tmp;
+            x = row;
+            break;
         }
     }
     
@@ -222,13 +221,6 @@ Coords *recieveCoords()
         Serial.print(y);
         Serial.print(";");
         Serial.println(col);
-
-        if (col == 88 && y < 8 && y > 0)
-        {
-            int tmp = col;
-            col = y;
-            y = tmp;
-        }
     }
 
     delay(100);
