@@ -424,11 +424,11 @@ void waitForTurn()
 
     Coords *c = recieveCoords();
 
-    int theirRow = c -> getX();
+    int theirRow = c -> getX(); //getting their column and row values to bolster communcation
     int theirCol = c -> getY();
 
     Serial.print("Their Row: ");
-    Serial.println(theirRow);
+    Serial.println(theirRow);   //used for testing to see if coordinates were being mapped correctly 
     Serial.print("Their Col: ");
     Serial.println(theirCol);
 
@@ -440,12 +440,12 @@ void waitForTurn()
     else if (myShipsDisplay[theirRow][theirCol] == SHIP)
     {
         Serial.print("They hit us!");
-        myShipsDisplay[theirRow][theirCol] = HIT; 
+        myShipsDisplay[theirRow][theirCol] = HIT;  // ship would turn orange when hit by other player
 
         if (ships[shipsLoc[theirRow][theirCol]].isDestroyed())
-            status = 'D';
+            status = 'D'; //used for testing to see if hit and destory would be differentiated
         else
-            status = 'H';
+            status = 'H'; //h is for single hit and d for destoryed
     }
 
     Serial.print("Status: ");
@@ -464,7 +464,7 @@ void waitForTurn()
         {
             Coords cc = ships[shipsLoc[theirRow][theirCol]].getCoords()[i];
 
-            Serial.print("Transmitting coord ");
+            Serial.print("Transmitting coord ");  //message of destroyed ship would have to be relayed
             int row = cc.getX();
             int col = cc.getY();
             Serial.print(row);
