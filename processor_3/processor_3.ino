@@ -106,7 +106,7 @@ class Ship
                     if (myShipsDisplay[cc.getX()][cc.getY()] == SHIP)
                         return false;
                     else if (i + 1 == this -> size)
-                    {
+                    {   // If it's destroyed, we mark all the spots on our display as red.
                         for (int j = 0; j < this -> size; j++)
                         {
                             Coords ccc = c[j];
@@ -327,6 +327,7 @@ void transmitCoords(int x, int y)
     Wire.flush();
 }
 
+// This method is called for the turn based system. It allows us to pick the spot to fire at, then transmit the coordinate data and receive back whether it's a hit or miss.
 void myTurn()
 {
     Serial.println("My turn");
@@ -410,6 +411,7 @@ void myTurn()
     waitForTurn();
 }
 
+// Wait until it's my turn to receive back the coordinates.
 void waitForTurn()
 {
     updateDisplay(myShipsDisplay);  //show ships while other person fires
@@ -621,6 +623,8 @@ void placeShips()
     shipsPlaced = true;
 }
 
+// Return a random coordinate
+// For some reason t_rand has been glitchy, so we only run it once and check if they're valid once.
 Coords *findSpot(int size)
 {
     Coords *c = new Coords(t_rand(1, 8), t_rand(1, 8));
@@ -724,7 +728,6 @@ void placeDot(int row, int col, bool orientation, int size) //used to construct 
 }
 
 // Place one ship
-// TODO: Add function that finds valid spot for ship of length int size
 // @args: size of ship
 Coords placeDot(int size)
 {
@@ -786,6 +789,7 @@ Coords placeDot(int size)
     Serial.println(col);
     Serial.flush();
 
+    // Return coordinate pointer. Will turn to NULL shortly after due to stack.
     Coords *ccc = new Coords(row, col);
     return *ccc;
 }
