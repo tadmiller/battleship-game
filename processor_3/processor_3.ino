@@ -80,18 +80,18 @@ class Ship
         Ship() {}
         Ship(int x, int y, int size, int shipNum, Coords c[])
         {
-            this -> destroyed = false;
+            this -> destroyed = false;  //default ship attributes
             this -> c = c;
             this -> size = size;
             this -> shipNum = shipNum;
         }
 
-        int getSize()
+        int getSize() //returns size of the ship (how many spaces it takes up on display)
         {
             return size;
         }
 
-        bool isDestroyed()
+        bool isDestroyed()  //checks to see if ship is destroyed to turn it red
         {
             if (this -> destroyed)
                 return true;
@@ -209,7 +209,7 @@ int t_rand(int x, int y)
     return ((((int) millis()) * random(x, y)) % (y + 1));
 }
 
-Coords *recieveCoords()
+Coords *recieveCoords() //for one arduino to receive the coordinates of certain positions on the display
 {
     int row = -1;
     int col = -1;
@@ -286,7 +286,7 @@ Coords *recieveCoords()
 
 void transmitCoords(int x, int y)
 {   
-    Serial.print("Transmitting: ");
+    Serial.print("Transmitting: "); //for one arduino to send the coordinates of certain positions on the display
     Serial.print(x);
     Serial.print(", ");
     Serial.println(y);
@@ -324,7 +324,7 @@ void myTurn()
     Coords coord = placeDot(1);
     char status = 'A';
 
-    Wire.beginTransmission(8);
+    Wire.beginTransmission(8);  //allows the player whos turn it is to send the transmission that they are firing on the other player
     Wire.write('F');
     delay(15);
     Wire.write('F');
@@ -332,7 +332,7 @@ void myTurn()
     
     Serial.print("Transmitting coordinates! (");
     int x = coord.getX();
-    int y = coord.getY();
+    int y = coord.getY(); //sending coordinates
     Serial.print(x);
     Serial.print(", ");
     Serial.print(y);
@@ -348,14 +348,14 @@ void myTurn()
     Serial.print("Status: ");
     Serial.println(status);
 
-    if (status == 'H')
+    if (status == 'H')  //if a boat is hit the coordinates will be sent so that the spot turns orange
     {
         Serial.println("We hit them!");
         firedPositions[coord.getX()][coord.getY()] = HIT;
     }
     else if (status == 'D')
     {
-        Serial.println("We've sunk their battleship!");
+        Serial.println("We've sunk their battleship!"); //if the boat is sunk then the spot will turn red once the coordiantes are transmitted
         shipsDestroyed++;
         firedPositions[coord.getX()][coord.getY()] = DESTROY;
 
@@ -374,27 +374,27 @@ void myTurn()
     }
     else
     {
-        Serial.println("No hit!");
+        Serial.println("No hit!");  //if no hit then the coordinates sent will turn off the light at that position
         firedPositions[coord.getX()][coord.getY()] = NOHIT;
     }
 
     updateDisplay(firedPositions);
     delay(2500);
 
-    if (shipsDestroyed == 6)
+    if (shipsDestroyed == 6)  //counter is kept on how many ships are destroyed, if they are all destoryed (6 of them) then win message is ent
     {
         Serial.println("I win!");
 
         while (1)
         {
-            updateDisplay(win);
+            updateDisplay(win); //makes screen flash green
             delay(500);
-            updateDisplay(firedPositions);
+            updateDisplay(firedPositions);  
             delay(500);
         }
     }
 
-    if (status == 'H' || status == 'D')
+    if (status == 'H' || status == 'D') //a player is allowed to keep firing if they get a hit or destroy a ship
         myTurn();
     
     waitForTurn();
@@ -402,7 +402,7 @@ void myTurn()
 
 void waitForTurn()
 {
-    updateDisplay(myShipsDisplay);
+    updateDisplay(myShipsDisplay);  //show ships while other person fires
 
     Serial.println("Waiting for other player to fire...");
     char status = 'A';
@@ -430,7 +430,7 @@ void waitForTurn()
     else if (myShipsDisplay[theirRow][theirCol] == SHIP)
     {
         Serial.print("They hit us!");
-        myShipsDisplay[theirRow][theirCol] = HIT;
+        myShipsDisplay[theirRow][theirCol] = HIT; 
 
         if (ships[shipsLoc[theirRow][theirCol]].isDestroyed())
             status = 'D';
@@ -618,7 +618,7 @@ bool isValidSpots(int row, int col, bool orientation, int size)
 {
     int i;
 
-    for (i = 0; i < size; i++)
+    for (i = 0; i < size; i++)  //checks to see where a spot is that empty to put cursor
     {
         if (orientation)
         {
@@ -633,7 +633,7 @@ bool isValidSpots(int row, int col, bool orientation, int size)
     return true;
 }
 
-bool isValidSpot(int row, int col)
+bool isValidSpot(int row, int col)  //like previous method but is used for ship placement
 {
     if (!shipsPlaced)
         return myShipsDisplay[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
@@ -641,7 +641,7 @@ bool isValidSpot(int row, int col)
         return firedPositions[row][col] == EMPTY && 8 > row && row > -1 && 8 > col && col > -1 ? true : false;
 }
 
-void cpyTmpDisplay()
+void cpyTmpDisplay()  //part of the device driver that we built for the RGB 8X8 matrix
 {
     if (!shipsPlaced)
         for (int i = 0; i < 8; i++)
@@ -653,7 +653,7 @@ void cpyTmpDisplay()
                 tmpDisplay[i][j] = firedPositions[i][j];
 }
 
-void displayDots(int row, int col, bool orientation, int size)
+void displayDots(int row, int col, bool orientation, int size) //shows individually colored dots on screen
 {
     if (!shipsPlaced)
         if (orientation)
@@ -666,7 +666,7 @@ void displayDots(int row, int col, bool orientation, int size)
         tmpDisplay[row][col] = CURSOR;
 }
 
-void placeDot(int row, int col, bool orientation, int size)
+void placeDot(int row, int col, bool orientation, int size) //used to construct the colored images on the screen
 {
     if (!shipsPlaced)
     {
@@ -728,6 +728,7 @@ Coords placeDot(int size)
         
         if (action == '7' && ((col + size < 9 && !orientation) || (row + size < 9 && orientation)))
             orientation = !orientation;
+                                            //controls for directional pad functionality with keypad buttons
         else if (action == '8') // up
         {   
             if ((col + size < 8 && orientation) || (col < 7 && !orientation))
@@ -773,14 +774,14 @@ Coords placeDot(int size)
     return *ccc;
 }
 
-void updateDisplay(byte frame[8][8])
+void updateDisplay(byte frame[8][8]) //used to change frame, constantly updated when needed
 {
     drawFrame(frame);
     delay(20);
     drawFrame(frame);
 }
 
-void drawFrame(byte frame[8][8])
+void drawFrame(byte frame[8][8])  //draws frame on 8x8 matrix
 {
     digitalWrite(clock, LOW);  //sets the clock for each display, running through 0 then 1
     digitalWrite(data, LOW);   //ditto for data.
