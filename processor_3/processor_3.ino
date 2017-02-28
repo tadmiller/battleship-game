@@ -220,8 +220,9 @@ Coords *recieveCoords() //for one arduino to receive the coordinates of certain 
 
     byte count = 0;
 
+    // Part of TCP/I2C protocol.
     while (x != 88 || row > 7 || row < 0)
-    {
+    {   // Look for us to recieve the value "X" and then a number between 0 and 7. This would be our X coordinate.
         Wire.flush();
         x = Wire.read();
         delay(7);
@@ -237,7 +238,8 @@ Coords *recieveCoords() //for one arduino to receive the coordinates of certain 
             break;
         }
     }
-    
+
+    // Now that we've received X, transmit back an acknowledgement. This is us writing X = "Hey, I received X. Send Y now"
     while (y != 89 || row > 7 || row < 0)
     {
         Wire.flush();
@@ -263,6 +265,7 @@ Coords *recieveCoords() //for one arduino to receive the coordinates of certain 
 
     delay(100);
 
+    // OK. We have X and Y. Transmit back we got everything BARE MINIMUM 10 times.
     do
     {
         Wire.flush();
@@ -281,6 +284,9 @@ Coords *recieveCoords() //for one arduino to receive the coordinates of certain 
 
     Wire.flush();
 
+    // Done.
+    // In the case we receive a glitchy coordunate, we use this modulo to make sure it's between 0 and 7. It has happened a couple of times
+    // and is the best solution I can come up with to solve this issue.
     return new Coords(row > 8 ? row % 8 : row, col > 8 ? col % 8 : col);
 }
 
@@ -290,6 +296,8 @@ void transmitCoords(int x, int y)
     Serial.print(x);
     Serial.print(", ");
     Serial.println(y);
+
+    // Transmit 'X' and the coordinate right after on the wire. This way the other end knows we're sending X
     do
     {
         Wire.flush();
@@ -298,11 +306,12 @@ void transmitCoords(int x, int y)
         delay(10);
         Wire.write(x);
         Wire.endTransmission();
-    }
+    } // ... until we receive 'X' back which means they have that coordinate.
     while (Wire.read() != 'X');
 
     Serial.println("Sent X coords");
 
+    // OK. They got X. Send Y now.
     do
     {
         Wire.flush();
@@ -314,6 +323,7 @@ void transmitCoords(int x, int y)
     }
     while (Wire.read() != 'Y');
 
+    // Boom done.
     Wire.flush();
 }
 
@@ -480,6 +490,7 @@ void waitForTurn()
     myTurn();
 }
 
+// Determines which player goes first, by rolling an 80 sided die.
 void determineFirst()
 {
     Serial.println("Determining player to go first...");
@@ -488,6 +499,7 @@ void determineFirst()
     int myNum = rnd > 0 ? rnd : -rnd;
     int opNum = -1;
 
+    // Transmit data across Wire of my random number.
     do
     {
         opNum = Wire.read();
@@ -499,7 +511,8 @@ void determineFirst()
         delay(50);
     }
     while (opNum == -1 || opNum == 82);
-        
+
+    // Brute force method. Again.
     delay(25);
     Wire.beginTransmission(8); // transmit to device #8
     Wire.write(myNum);        // sends five bytes
@@ -527,6 +540,7 @@ void determineFirst()
 }
 
 // Should add here "WELCOME TO BATTLESHIP" on RGB display
+// Maybe if we had more time...
 void initGame()
 {
     Serial.print("Starting Battleship v");
@@ -537,7 +551,8 @@ void initGame()
     placeShips();
 }
 
-// R = Ready
+// Establish connection between Arduinos
+// Transmit 'R' across wire when ready. Game will begin after this process.
 void initConnection()
 {
     Serial.println("Establishing connection...");
@@ -551,10 +566,11 @@ void initConnection()
     }
     while (Wire.read() != 'R');
 
+    // Brute force technique. Not the best but works for the 99%
     Wire.beginTransmission(8); // transmit to device #8
-    Wire.write('R');        // sends five bytes
+    Wire.write('R');
     delay(50);
-    Wire.write('R');        // sends five bytes
+    Wire.write('R');
     Wire.endTransmission();    // stop transmitting
 
     Serial.println("Connection established");
